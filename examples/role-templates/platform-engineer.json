@@ -1,0 +1,17 @@
+{
+  "id": "platform-engineer",
+  "name": "Platform Engineer",
+  "description": "Builds and maintains internal developer platforms and tooling",
+  "base_role_id": "devops",
+  "focus_areas": [
+    "platform",
+    "tooling",
+    "developer-experience",
+    "automation",
+    "self-service",
+    "observability",
+    "reliability"
+  ],
+  "default_tags": ["platform", "tooling", "dx"],
+  "preferred_context_types": ["decision", "config", "standard", "code"]
+}

@@ -1,0 +1,31 @@
+[package]
+name = "mpcm-server"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "mpcm-server"
+path = "src/main.rs"
+
+[[bin]]
+name = "mpcm-server-v2"
+path = "src/main_v2.rs"
+
+[dependencies]
+mpcm-core = { path = "../mpcm-core" }
+tokio = { workspace = true, features = ["net", "io-util", "signal", "rt-multi-thread", "macros"] }
+tokio-util = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+clap = { version = "4.5", features = ["derive", "env"] }
+futures = "0.3"
+chrono = "0.4"
+dirs = "5.0"
+
+[dev-dependencies]
+tempfile = "3.12"

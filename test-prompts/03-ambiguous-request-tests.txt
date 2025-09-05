@@ -1,0 +1,12 @@
+# Ambiguous Request Tests
+# Tests how Claude handles vague or ambiguous requests
+# Each line is a separate prompt
+
+Remember that we need to fix the login bug
+How's my project doing?
+Show me everything from yesterday
+I'm working on three different features
+What should I work on next?
+There's something I decided last week but I forgot what it was
+Can you summarize the current state of my projects?
+I need to check what my team decided

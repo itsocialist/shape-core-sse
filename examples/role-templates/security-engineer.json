@@ -1,0 +1,17 @@
+{
+  "id": "security-engineer",
+  "name": "Security Engineer",
+  "description": "Focuses on security architecture, threat modeling, and vulnerability assessment",
+  "base_role_id": "architect",
+  "focus_areas": [
+    "security",
+    "threats",
+    "vulnerabilities",
+    "compliance",
+    "authentication",
+    "authorization",
+    "encryption"
+  ],
+  "default_tags": ["security", "threat-model", "audit"],
+  "preferred_context_types": ["issue", "decision", "standard", "config"]
+}

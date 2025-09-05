@@ -1,0 +1,3953 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shape Core Full Timeline</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 20px;
+      background: #f5f5f5;
+    }
+    h1 {
+      color: #333;
+      border-bottom: 2px solid #4CAF50;
+      padding-bottom: 10px;
+    }
+    .timeline {
+      position: relative;
+      padding: 20px 0;
+    }
+    .timeline-line {
+      position: absolute;
+      left: 50px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #ddd;
+    }
+    .timeline-entry {
+      position: relative;
+      margin-bottom: 30px;
+      padding-left: 80px;
+    }
+    .timeline-dot {
+      position: absolute;
+      left: 42px;
+      top: 5px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      background: #4CAF50;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .timeline-dot.decision { background: #2196F3; }
+    .timeline-dot.code { background: #FF9800; }
+    .timeline-dot.standard { background: #9C27B0; }
+    .timeline-dot.status { background: #4CAF50; }
+    .timeline-dot.todo { background: #F44336; }
+    .timeline-dot.note { background: #607D8B; }
+    .timeline-dot.issue { background: #FF5722; }
+    
+    .timeline-date {
+      position: absolute;
+      left: -80px;
+      top: 5px;
+      width: 100px;
+      text-align: right;
+      color: #666;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .timeline-card {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .timeline-type {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: white;
+    }
+    .timeline-type.decision { background: #2196F3; }
+    .timeline-type.code { background: #FF9800; }
+    .timeline-type.standard { background: #9C27B0; }
+    .timeline-type.status { background: #4CAF50; }
+    .timeline-type.todo { background: #F44336; }
+    .timeline-type.note { background: #607D8B; }
+    .timeline-type.issue { background: #FF5722; }
+    
+    .timeline-key {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    .timeline-value {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .timeline-meta {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #999;
+    }
+    .filters {
+      margin-bottom: 30px;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .filter-btn {
+      padding: 5px 15px;
+      margin-right: 10px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      background: white;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .filter-btn.active {
+      background: #4CAF50;
+      color: white;
+      border-color: #4CAF50;
+    }
+  </style>
+</head>
+<body>
+  <h1>Shape Core Full Timeline</h1>
+  
+  <div class="filters">
+    <button class="filter-btn active" onclick="filterTimeline('all')">All</button>
+    <button class="filter-btn" onclick="filterTimeline('decision')">Decisions</button>
+    <button class="filter-btn" onclick="filterTimeline('code')">Code</button>
+    <button class="filter-btn" onclick="filterTimeline('status')">Status</button>
+    <button class="filter-btn" onclick="filterTimeline('issue')">Issues</button>
+  </div>
+  
+  <div class="timeline">
+    <div class="timeline-line"></div>
+    
+      <div class="timeline-entry" data-type="note">
+        <div class="timeline-dot note"></div>
+        <div class="timeline-date">7/12/2025<br>05:34 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type note">note</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">context-management-tools-suite</div>
+          <div class="timeline-value">Comprehensive Context Management Tools Suite Added (July 12, 2025):
+
+New NPM Scripts:
+1. **analyze-context**: Database analytics showing projects, roles, entry types, sizes
+2. **list-context**: List a...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/12/2025<br>05:33 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">frontend-fix-progress-chat-formatting</div>
+          <div class="timeline-value">**Frontend Fix Progress - Chat Formatting**
+**Date**: 2025-07-11
+**Status**: COMPLETED ✅
+
+## P0 Fix #1: Chat Formatting (MPCM-012) - DONE
+
+### Changes Applied:
+1. ✅ Updated ChatArea.css to light theme...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="note">
+        <div class="timeline-dot note"></div>
+        <div class="timeline-date">7/12/2025<br>05:13 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type note">note</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">memory-optimization-export-feature</div>
+          <div class="timeline-value">Enhanced Memory Optimization with Export Feature (July 12, 2025):
+
+Added automatic data export to memory optimization script for safety:
+
+1. **Automatic Export**: Script now exports all data before op...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="note">
+        <div class="timeline-dot note"></div>
+        <div class="timeline-date">7/12/2025<br>05:09 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type note">note</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">database-clarification</div>
+          <div class="timeline-value">Important Database Clarification (July 12, 2025):
+
+Shape Core uses TWO databases in ~/.shape-core/:
+
+1. **shape-core.db** (1.6MB) - MAIN DATABASE
+   - Used by Ship APE MCP tools
+   - Contains all proj...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="note">
+        <div class="timeline-dot note"></div>
+        <div class="timeline-date">7/12/2025<br>05:03 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type note">note</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">memory-optimization-cli-script</div>
+          <div class="timeline-value">Added command-line script for memory optimization (July 12, 2025):
+
+Location: scripts/optimize-memory.ts
+
+Usage:
+- npm run optimize-memory (performs optimization)
+- npm run optimize-memory:dry-run (an...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/12/2025<br>04:30 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">recent-commits-summary</div>
+          <div class="timeline-value">Recent commits show the project has undergone a rebranding from MPCM to Shape/Ship APE:
+
+Latest commits:
+- ca7d6d7: Complete database recovery and final rebranding updates
+- 5ddbc4d: PM_REVIEW marker ...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="config">
+        <div class="timeline-dot config"></div>
+        <div class="timeline-date">7/12/2025<br>04:29 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type config">config</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">git-repository-info</div>
+          <div class="timeline-value">Git repository: git@github.com:itsocialist/shape-core.git
+Main branch: main
+Current branches include:
+- main
+- feature/adapter-swappability  
+- feature/shape-rebranding
+
+The project appears to have un...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="config">
+        <div class="timeline-dot config"></div>
+        <div class="timeline-date">7/12/2025<br>04:29 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type config">config</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">repository-location</div>
+          <div class="timeline-value">Primary repository: /Users/briandawson/workspace/shape-core
+This is the main implementation directory for MPCM-Pro (now Ship APE Core).
+
+Related projects:
+- /Users/briandawson/workspace/mpcm-pro-deskt...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/12/2025<br>04:29 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">current-implementation-status</div>
+          <div class="timeline-value">MPCM-Pro implementation is located in /Users/briandawson/workspace/shape-core. The project has been rebranded as "Ship APE Core" (Shape APE Core) as seen in the index.ts file. Current state: 1. Mai......</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/12/2025<br>12:33 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">frontend-handoff-complete</div>
+          <div class="timeline-value">**Frontend Engineer Handoff Complete** **Date**: 2025-07-11 **From**: Backend Developer **To**: Frontend Engineer ## Current State - ✅ Git committed and tagged: `v0.1.0-sprint7-backend-complete` - ......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/12/2025<br>12:29 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">pm-sprint-7-developer-guidance</div>
+          <div class="timeline-value">**Product Manager Response to Sprint 7 QA Results** **Date**: 2025-07-11 **Decision**: EMERGENCY UI FIX SPRINT ## Executive Summary QA testing revealed that while backend integration is working, th......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/12/2025<br>12:24 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">qa-sprint-7-final-report</div>
+          <div class="timeline-value">**Sprint 7 QA Final Report** **Date**: 2025-07-11 **Tester**: QA Engineer + User Testing **Build**: v0.1.0-sprint7 ## Executive Summary **RELEASE DECISION: 🚫 NO GO** The application has critical U......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/12/2025<br>12:24 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">MPCM-012-chat-formatting-critical</div>
+          <div class="timeline-value">**Bug**: Chat Box Formatting Completely Broken
+**Severity**: Critical (BLOCKER)
+**Status**: New
+**Discovered**: Sprint 7 User Testing
+**Reporter**: User Testing
+
+**Description**: 
+User confirmed that ...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/12/2025<br>12:23 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">MPCM-011-ui-responsiveness-issues</div>
+          <div class="timeline-value">**Bug**: UI Not Responsive and Lacks Professional Polish **Severity**: High **Status**: New **Discovered**: Sprint 7 User Testing **Reporter**: User Testing **Description**: Multiple UI quality iss......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/12/2025<br>12:23 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">MPCM-010-search-functionality-missing</div>
+          <div class="timeline-value">**Bug**: Conversation Search Functionality Missing
+**Severity**: Medium
+**Status**: New
+**Discovered**: Sprint 7 User Testing
+**Reporter**: User Testing
+
+**Description**: 
+No search functionality exis...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/12/2025<br>12:23 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">MPCM-009-file-upload-missing</div>
+          <div class="timeline-value">**Bug**: File Upload UI Missing
+**Severity**: High
+**Status**: New
+**Discovered**: Sprint 7 User Testing
+**Reporter**: User Testing
+
+**Description**: 
+File upload functionality is completely missing f...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/11/2025<br>11:51 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">MPCM-008-role-badges-missing</div>
+          <div class="timeline-value">**Bug**: Role Badges Not Displaying
+**Severity**: High
+**Status**: New
+**Discovered**: Sprint 7 QA Testing
+
+**Description**: 
+Role indicators/badges are not visible anywhere in the UI, even though rol...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/11/2025<br>11:51 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">MPCM-007-projects-not-visible</div>
+          <div class="timeline-value">**Bug**: Projects Not Visible in Sidebar
+**Severity**: Critical
+**Status**: New
+**Discovered**: Sprint 7 QA Testing
+
+**Description**: 
+Although Ship APE is loading projects successfully in the backend...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/11/2025<br>11:50 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">qa-test-results-sprint-7</div>
+          <div class="timeline-value">**Sprint 7 QA Test Results** **Date**: 2025-07-11 **Tester**: QA Engineer Role **Build**: v0.1.0-sprint7 ## Test Suite Summary ### 1. Ship APE Integration ✅ PARTIAL PASS - ✅ Roles loading successfu......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/11/2025<br>11:50 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">MPCM-006-port-conflict</div>
+          <div class="timeline-value">**Bug**: Port 5174 Already in Use
+**Severity**: Medium
+**Status**: New
+**Discovered**: Sprint 7 QA Testing
+
+**Description**: 
+When running `npm run dev`, the Vite dev server fails to start because por...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/11/2025<br>11:49 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">MPCM-005-chat-formatting-broken</div>
+          <div class="timeline-value">**Bug**: Chat Interface Formatting Broken
+**Severity**: High
+**Status**: New
+**Discovered**: Sprint 7 QA Testing
+
+**Description**: 
+The chat interface has significant formatting issues that break the ...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/11/2025<br>11:28 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">qa-issue-002-duplicate-calls</div>
+          <div class="timeline-value">## QA-002: Duplicate Ship APE Calls
+
+**Severity**: High
+**Found During**: Sprint 7 Integration Testing
+**Date**: July 11, 2025
+
+### Issue Description
+The app is making duplicate calls to Ship APE for ...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/11/2025<br>11:28 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">qa-issue-001-slow-startup</div>
+          <div class="timeline-value">## QA-001: Slow Startup Performance
+
+**Severity**: Medium
+**Found During**: Sprint 7 Integration Testing
+**Date**: July 11, 2025
+
+### Issue Description
+App startup is slow due to multiple Ship APE MCP...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/11/2025<br>11:24 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">sprint-7-qa-status</div>
+          <div class="timeline-value">## Sprint 7 QA Status - July 11, 2025 @ 9:35 PM ### 🧪 Ready for QA Testing **Story 7.1: Ship APE Integration** - Status: IMPLEMENTED - Awaiting QA - Developer: Claims projects load from Ship APE -......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/11/2025<br>11:02 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">sprint-7-final-status</div>
+          <div class="timeline-value">## Sprint 7 Final Status - July 11, 2025 @ 9:30 PM ### ✅ Completed Stories 1. **Story 7.1**: Ship APE Integration via Claude Code ✅ - MCP server integration working - Projects loading from Ship APE......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/11/2025<br>11:02 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">caching-backlog-item</div>
+          <div class="timeline-value">## Caching Enhancement - Projects and Roles
+
+**Issue**: Projects and roles are loaded via LLM/tool calls on every refresh, causing unnecessary delays and API usage.
+
+**Solution**:
+1. Implement localSt...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/11/2025<br>09:01 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">sprint-7-progress-update-7-11-2025</div>
+          <div class="timeline-value">## Sprint 7 Progress Update - July 11, 2025 @ 9:00 PM ### ✅ Completed Tasks - **MPCM-001**: Project context loading to Claude (FIXED) - **MPCM-002**: New Chat button functionality (VERIFIED WORKING......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/11/2025<br>08:49 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">sprint-7-progress-7-11-2025</div>
+          <div class="timeline-value">## Sprint 7 Progress - July 11, 2025
+
+### ✅ Completed
+- Ship APE MCP integration fixed (projects loading)
+- MPCM-001: Project context now passed to Claude
+- MPCM-002: New Chat button fixed (partial)
+
+...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/11/2025<br>05:52 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">backlog-issues-7-11-2025</div>
+          <div class="timeline-value">## Backlog Issues - July 11, 2025
+
+### P0 - Critical
+- **No Project Context in Chat**: Claude Code doesn't receive current project context when chatting. Need to pass project metadata with each messag...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="reference">
+        <div class="timeline-dot reference"></div>
+        <div class="timeline-date">7/11/2025<br>05:49 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type reference">reference</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">ship-ape-mcp-integration-guide</div>
+          <div class="timeline-value">Ship APE MCP Integration Fix Guide
+
+Location: docs/SHIP_APE_MCP_FIX_GUIDE.md
+
+Quick Fix Command:
+claude mcp add ship_ape node /Users/briandawson/workspace/shape-core/dist/index.js
+
+Key Files:
+- src/ma...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/11/2025<br>05:10 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">ship-ape-integration-fixed</div>
+          <div class="timeline-value">✅ SHIP APE INTEGRATION FIXED! ## Problem Solved (7/11/2025 10:10 AM) ### Root Cause - Ship APE MCP server was not configured in Claude Code - The bridge was receiving permission requests instead of......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/11/2025<br>03:40 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">current-application-state-7-11-2025</div>
+          <div class="timeline-value">## MPCM-Pro Desktop Status - July 11, 2025 @ 8:50 PM ### Current State: FUNCTIONAL WITH ISSUES ⚠️ **✅ Working Features:** - Application launches and runs successfully - Claude Code integration acti......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/10/2025<br>03:36 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">ship-ape-integration-fixes</div>
+          <div class="timeline-value">🔧 SHIP APE INTEGRATION FIXES APPLIED
+
+## Issues Fixed:
+1. **Project Context Parsing**: Fixed restrictive regex patterns to handle flexible Ship APE response formats
+2. **Store Context Stubs**: Added s...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/10/2025<br>05:51 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">mcp-stdio-server-fixed</div>
+          <div class="timeline-value">✅ MCP STDIO SERVER INTEGRATION FIXED ## Root Cause The Ship APE MCP server was configured in `.mcp/config.json` for internal app usage, but Claude Code SDK wasn't aware of it. The error was happeni......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/10/2025<br>03:32 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">investigate-mcp-stdio-failure</div>
+          <div class="timeline-value">URGENT: MCP stdio server communication broken
+
+To investigate:
+1. Check git log for changes in last 6 hours
+2. Look for changes in:
+   - src/main/shipApeHandler.ts (handles MCP communication)
+   - con...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/10/2025<br>03:32 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">e2e-testing-completed</div>
+          <div class="timeline-value">Completed comprehensive E2E testing setup:
+
+Achievements:
+1. Fixed test runner using spawnSync instead of execSync for proper error handling
+2. Converted from Puppeteer to Playwright for Electron test...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/10/2025<br>03:32 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">mcp-stdio-server-broken</div>
+          <div class="timeline-value">MCP stdio server for shape-core stopped working after changes made in the last 6 hours. 
+
+Symptoms:
+- Getting error: "The shape-core MCP server is configured but not currently active"
+- Tool `mcp__sha...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/9/2025<br>08:47 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">dev-plan-sprint-6-7</div>
+          <div class="timeline-value">## MPCM-Pro Desktop Development Plan - Sprints 6-7 ### Phase 1: Core Integration Fixes (Sprint 6) #### 1. Fix Claude Code Integration - ✅ Add @anthropic-ai/claude-code dependency (v1.0.43) - 🔧 Fix......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="config">
+        <div class="timeline-dot config"></div>
+        <div class="timeline-date">7/9/2025<br>08:35 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type config">config</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">puppeteer-mcp-server-added</div>
+          <div class="timeline-value">✅ PUPPETEER MCP SERVER ADDED TO CLAUDE DESKTOP ## Changes Made (7/9/2025 4:55 PM) ### Added to Claude Desktop Config - **File**: `/Users/briandawson/Library/Application Support/Claude/claude_deskto......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/9/2025<br>04:53 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">project-context-cross-contamination-fix</div>
+          <div class="timeline-value">🔧 PROJECT CONTEXT CROSS-CONTAMINATION FIX
+
+## Issue Fixed (7/9/2025 4:35 PM)
+Projects loading wrong context - "claude-remote" receiving "mpcm-pro-desktop" context
+
+## Root Cause
+Ship APE project not s...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/9/2025<br>04:20 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">context-display-fix-applied</div>
+          <div class="timeline-value">🔧 CONTEXT DISPLAY BUG FIX APPLIED ## Changes Made (7/9/2025 4:20 PM) ### Issue Fixed - Context parsing was working but UI showed "EMPTY" despite successful data loading - React state updates weren......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/9/2025<br>03:51 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">contentpreview-parsing-fix</div>
+          <div class="timeline-value">🎯 CONTENT PREVIEW PARSING FIX
+
+## Fix Applied (7/9/2025 1:15 PM)
+
+### Issue Found
+Context was in `response.data.contentPreview` field, not in structured format
+
+### Solution
+Added prioritized parsing:...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/9/2025<br>03:47 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">context-display-debugging</div>
+          <div class="timeline-value">🐛 CONTEXT DISPLAY DEBUGGING APPLIED
+
+## Debug Changes (7/9/2025 1:05 PM)
+
+### Issue
+Context loading in console but not displaying in UI
+
+### Debug Additions
+1. **Always show context section** - Force ...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/9/2025<br>03:44 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">project-switching-delay-backlog</div>
+          <div class="timeline-value">🔄 PROJECT SWITCHING DELAY + LOADING UX ## Backlog Item (7/9/2025 12:50 PM) ### Issue When switching projects, immediate context loading can: - Overwhelm the system with rapid API calls - Burn toke......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/9/2025<br>03:43 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">context-parsing-fix-applied</div>
+          <div class="timeline-value">🔧 CONTEXT PARSING FIX APPLIED
+
+## Changes Made (7/9/2025 12:45 PM)
+
+### Issue
+- Context was being retrieved but not properly parsed
+- Response structure didn't match expected format
+- Context display ...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/9/2025<br>03:31 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">project-context-loading-implemented</div>
+          <div class="timeline-value">✅ PROJECT CONTEXT LOADING IMPLEMENTED ## Changes Made (7/9/2025 12:30 PM) ### Issue Fixed - Projects were loading but not using project context when selected - Claude responses lacked project-speci......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/9/2025<br>07:23 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">triple-calls-fix-update</div>
+          <div class="timeline-value">TRIPLE CALLS FIX - PROGRESS UPDATE
+
+ISSUE IDENTIFIED:
+- The `ship-ape:direct-list-projects` handler is being called twice concurrently
+- This causes duplicate Claude Code SDK calls to mcp__shape-core_...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/9/2025<br>07:07 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">shipape-parsing-fix</div>
+          <div class="timeline-value">SHIP APE PARSING FIX APPLIED
+
+PROBLEM: parseProjectList() was looking for wrong format
+- Expected: "📁 Project: projectname" 
+- Actual: "1. **mpcm-pro-desktop** - Local Claude Desktop alternative..."
+
+...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/9/2025<br>06:55 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">shipape-fix-testing-instructions</div>
+          <div class="timeline-value">SHIP APE INTEGRATION FIX - TESTING INSTRUCTIONS CHANGES MADE: 1. ✅ Fixed ChatArea.tsx - Added comprehensive Ship APE MCP tools to allowedTools array 2. ✅ Fixed ClaudeCodeClient.ts - Improved respon......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/9/2025<br>06:54 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">shipape-integration-issue-analysis</div>
+          <div class="timeline-value">ISSUE FOUND: Ship APE `window.shipAPE.listProjects()` not working
+
+ROOT CAUSE: The ClaudeCodeClient.sendMessage() method is parsing the response incorrectly.
+
+EVIDENCE:
+1. Manual test `allowedTools: [...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/9/2025<br>05:59 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">claude-code-integration-sprint</div>
+          <div class="timeline-value">Implement Claude Code SDK integration for MPCM-Pro Desktop:
+
+1. **SDK Integration** (Priority 1)
+   - Install @anthropic-ai/claude-code package 
+   - Create Claude Code bridge component
+   - Implement...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/9/2025<br>05:49 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">parsing-fix-confirmed-working</div>
+          <div class="timeline-value">✅ SHIP APE RESPONSE PARSING FIX CONFIRMED WORKING ## Test Results (7/9/2025 10:45 AM) ### Before Fix: - contentLength: 20 characters received - Extraction: `undefined` (parsing failed silently) - R......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/9/2025<br>05:46 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">ship-ape-response-parsing-fix</div>
+          <div class="timeline-value">🐛 SHIP APE RESPONSE PARSING FIX APPLIED ## Problem Identified (7/9/2025 10:35 AM) - Ship APE server works correctly via command line - Ship APE tools work when called directly - Claude Code SDK re......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/9/2025<br>05:28 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">ship-ape-integration-analysis-complete</div>
+          <div class="timeline-value">✅ SHIP APE INTEGRATION ANALYSIS COMPLETE ## Status (7/9/2025 5:40 AM) ### Integration Status: ✅ WORKING Based on logs analysis, Ship APE MCP integration is **actually working correctly**: ``` [2025......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/9/2025<br>05:26 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">ship-ape-test-description-incorrect</div>
+          <div class="timeline-value">❌ SHIP APE TEST DESCRIPTION INCORRECT ## Problem Identified (7/9/2025 5:25 AM) The Ship APE test in Settings panel has an **incorrect description**: **Current Description (Misleading):** "Testing d......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/9/2025<br>05:19 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">claude-code-mcp-invocation-failure</div>
+          <div class="timeline-value">🐛 Claude Code MCP Invocation Failure ## Current Status (7/9/2025 4:40 AM) ### Problem Identified: Claude Code SDK is **receiving** MCP config correctly but **failing to invoke** the MCP tools ### ......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/9/2025<br>04:26 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">next-development-priorities-post-cleanup</div>
+          <div class="timeline-value">🎯 NEXT DEVELOPMENT PRIORITIES - POST CLEANUP ## Immediate Priorities (Next Session) ### 1. 🧪 **Testing & QA** (High Priority) - **Manual App Testing**: Test all core features end-to-end - **Role ......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/9/2025<br>04:25 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">duplication-cleanup-testing-complete</div>
+          <div class="timeline-value">🎉 DUPLICATION CLEANUP: TESTING COMPLETE & SUCCESSFUL ## Testing Results (7/9/2025 4:25 AM) **CLEANUP STATUS: ✅ FULLY SUCCESSFUL** ### ✅ What Was Fixed: 1. **Duplicate Ship APE Handlers Removed** ✅......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/9/2025<br>04:07 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">duplication-cleanup-complete</div>
+          <div class="timeline-value">🎉 DUPLICATION CLEANUP: COMPLETE ## Status Verification (7/9/2025 4:00 AM) **CLEANUP STATUS: ✅ ALREADY COMPLETED** All problematic duplicated files have been successfully removed: - ❌ mcpHandlers.t......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/9/2025<br>03:57 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">duplication-analysis-complete</div>
+          <div class="timeline-value">CRITICAL: Identified 4 conflicting Ship APE integration approaches causing duplication and maintenance overhead. Primary working integration: shipApeHandlers.ts + ship-ape-bridge.ts (via window.shipAP...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="reference">
+        <div class="timeline-dot reference"></div>
+        <div class="timeline-date">7/9/2025<br>03:48 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type reference">reference</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">codebase-method-analysis</div>
+          <div class="timeline-value">Comprehensive analysis of all key methods across 11 core files in MPCM-Pro Desktop codebase. Documents the flow from React components through IPC handlers to Ship APE MCP integration. Key architecture...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/9/2025<br>12:50 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">ship-ape-response-parsing-error</div>
+          <div class="timeline-value">🐛 Ship APE Response Parsing Error
+
+## Problem Identified (7/8/2025 11:20 PM)
+
+### Root Cause:
+The Ship APE Bridge is not correctly handling Claude Code SDK responses. When Claude uses MCP tools, the r...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>10:05 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">typescript-errors-fixed</div>
+          <div class="timeline-value">🐛 FIXED: TypeScript Compilation Errors ## Issues Fixed (7/8/2025 10:10 PM) ### Problems Found: 1. **Duplicate Window Type Declarations**: Had conflicting type declarations in API files and preload......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>09:48 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">ship-ape-project-listing-fixed</div>
+          <div class="timeline-value">🐛 SHIP APE PROJECT LISTING ISSUE FIXED ## Problem (7/8/2025 10:35 PM) Ship APE project listing wasn't working - the handler wasn't properly listing projects ## Root Cause 1. Missing IPC handlers f......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>09:21 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">sprint-7-development-plan</div>
+          <div class="timeline-value">🚀 SPRINT 7 DEVELOPMENT PLAN ## Current Status (7/8/2025 9:40 PM) - ✅ Ship APE MCP integration is working - ✅ Basic UI components (Sidebar, ChatArea) are implemented - ✅ Project and Role UI in side......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>09:12 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">ship-ape-project-loading-debug</div>
+          <div class="timeline-value">🐛 SHIP APE PROJECT LOADING DEBUG
+
+## Issue Details (7/8/2025 9:30 PM)
+
+### Current Behavior:
+- ✅ MCP connection is working
+- ✅ Roles are loading successfully (5 roles)
+- ❌ Projects showing 0 despite 5...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>09:04 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">ship-ape-integration-fix-applied</div>
+          <div class="timeline-value">✅ SHIP APE MCP CONFIGURATION FIX APPLIED
+
+## Fix Summary (7/8/2025 9:20 PM)
+
+### Changes Applied:
+1. ✅ Created `.mcp/config.json` with Ship APE MCP server configuration
+2. ✅ Created `mcp-config.json` ...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>08:55 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">ship-ape-integration-troubleshooting</div>
+          <div class="timeline-value">✅ SHIP APE INTEGRATION TROUBLESHOOTING COMPLETE ## Issue Resolved (7/8/2025 9:22 PM) ### Problem Solved: Projects dropdown not loading because MCP server wasn't configured. ### Solution Applied: 1.......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>08:51 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">ship-ape-mcp-integration-working</div>
+          <div class="timeline-value">🎉 SHIP APE MCP INTEGRATION WORKING ## Current Status (7/8/2025 8:30 PM) ### ✅ MAJOR MILESTONE: Direct Ship APE Integration via MCP **COMPLETED:** 1. **MCP Configuration Setup** - Created `.mcp/con......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/8/2025<br>08:25 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">ship-ape-mcp-setup-complete</div>
+          <div class="timeline-value">Ship APE MCP Integration Setup Complete
+
+## Setup Instructions Created
+
+1. Created setup-mcp.sh script to configure Shape Core as MCP server
+2. Updated ClaudeCodeClient to use SDK's built-in MCP suppo...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/8/2025<br>07:55 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">ship-ape-mcp-integration-complete</div>
+          <div class="timeline-value">Ship APE MCP Integration Completed ## Implementation Summary Successfully integrated Ship APE (shape-core) with MPCM-Pro Desktop via Claude Code SDK using MCP configuration. ### Key Components: 1. ......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/8/2025<br>07:42 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">claude-code-mcp-config-needed</div>
+          <div class="timeline-value">Claude Code MCP Configuration Required
+
+## Issue
+Claude Code SDK doesn't know how to connect to Ship APE MCP server.
+
+## Requirements
+1. Configure claude -mcp-config with Ship APE server location
+2. S...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/8/2025<br>07:37 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">ship-ape-direct-access-architecture</div>
+          <div class="timeline-value">Ship APE Direct Access Architecture
+
+## Better Approach: No Handlers Needed
+
+When user switches roles in UI:
+1. UI sends message to Claude Code: "Switch to architect role for project X"
+2. Claude dire...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/8/2025<br>07:34 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">ship-ape-integration-plan</div>
+          <div class="timeline-value">Ship APE Integration via Claude Code - Implementation Plan ## Current Problem - Mock data in IPC handlers - NOT acceptable for production - No real Ship APE integration - Misleading "MCP Direct" na......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/8/2025<br>07:27 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">epipe-error-fix</div>
+          <div class="timeline-value">Fixed EPIPE error by removing invalid MCP server reference
+
+## Root Cause
+The .mcp/config.json was referencing a non-existent MCP server at /mcp/server.js. When the app tried to spawn this server, it ...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/8/2025<br>07:26 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">ship-ape-direct-mcp-usage</div>
+          <div class="timeline-value">Use Ship APE directly as MCP server - no wrapper needed
+
+## Decision
+Ship APE is already an MCP server. Instead of creating wrappers or using IPC handlers, we should:
+1. Configure Ship APE in the MCP ...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>07:16 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Ship APE MCP Bridge Implementation Started</div>
+          <div class="timeline-value">🚀 SHIP APE MCP BRIDGE IMPLEMENTATION IN PROGRESS
+
+**COMPLETED:**
+✅ Created Ship APE MCP server at `/src/ship-ape-mcp/`
+✅ Implemented MCP protocol wrapper for Ship APE commands
+✅ Created `.mcp.json` co...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>06:25 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Story 7.1 Bug Found - Direct Ship APE MCP Integration Required</div>
+          <div class="timeline-value">🐛 CRITICAL BUG FOUND: Ship APE Integration Method Incorrect ## Problem Identified - ❌ **IPC Handler Error**: "No handler registered for 'ship-ape:list-projects'" - ❌ **Wrong Approach**: Created Cl......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>06:08 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Sprint 7 Story 7.1 Complete - Ship APE API Integration via Claude Code</div>
+          <div class="timeline-value">✅ STORY 7.1 COMPLETE: Ship APE API Integration via Claude Code ## Implementation Summary **Goal**: Create bridge between Electron app and Ship APE MCP server through Claude Code **Status**: ✅ COMPL......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/8/2025<br>06:03 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Ship APE Integration Strategy - MCP Bridge Design</div>
+          <div class="timeline-value">🎯 SHIP APE INTEGRATION STRATEGY: MCP Bridge Design ## Problem Analysis **Current State**: - Ship APE (MCP Server) provides project/role management to Claude - Electron app uses Claude Code SDK for......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/8/2025<br>06:02 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Sprint 7 Started - Ship APE Integration Analysis</div>
+          <div class="timeline-value">🚀 SPRINT 7 STARTED: Ship APE Integration Analysis Complete ## Current Status Assessment ✅ **Ship APE Access Confirmed**: I have direct access to Ship APE MCP server with full functionality ✅ **Ava......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>05:54 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Claude Desktop Feature Gap Analysis</div>
+          <div class="timeline-value">📊 CLAUDE DESKTOP FEATURE GAP ANALYSIS **CURRENT STATUS: ~25% Parity** **✅ FEATURES WE HAVE:** - Basic chat interface with message sending - Conversation persistence and loading - Model selection (......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/8/2025<br>05:54 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Sprint 7 Revised - Claude Desktop Feature Parity Focus</div>
+          <div class="timeline-value">🎯 SPRINT 7 REVISED: Claude Desktop Feature Parity Focus **NEW SPRINT 7 GOAL**: Achieve 50-75% Claude Desktop feature parity **CURRENT STATE**: ~25% parity - ✅ Basic chat interface - ✅ Conversation......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/8/2025<br>05:54 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Strategic Priority Shift - Claude Feature Parity First</div>
+          <div class="timeline-value">🎯 STRATEGIC PRIORITY SHIFT: Claude Feature Parity First **NEW DEVELOPMENT APPROACH:** 1. **Phase 1**: Achieve 50-75% Claude Desktop feature parity FIRST 2. **Phase 2**: Build MPCM-Pro (Ship APE) c......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>05:46 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Backlog Update - Strategic Pivot to Ship APE Integration</div>
+          <div class="timeline-value">📋 BACKLOG UPDATE: Strategic Pivot to Ship APE Integration **MAJOR STRATEGIC SHIFT:** ✅ Sprint 6: Conversation persistence (COMPLETE) 🎯 NEW FOCUS: Ship APE integration as core foundation **UPDATED......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/8/2025<br>05:46 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Sprint 7-9 Roadmap - Ship APE Integration & Project Management</div>
+          <div class="timeline-value"># 🚀 MPCM-Pro Desktop: Sprint 7-9 Roadmap ## 📊 Current Status: Sprint 6 Complete ✅ - Core conversation persistence working - UI foundation solid and professional - Claude Code integration stable -......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/8/2025<br>05:46 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Feature Requirement - Dynamic Role Management</div>
+          <div class="timeline-value">🎭 FEATURE REQUIREMENT: Dynamic Role Management **DYNAMIC ROLE FEATURES:** **1. ROLE CREATION & LOADING:** - Create new custom roles on-demand - Load roles from Ship APE role system - Update availa......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/8/2025<br>05:46 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Feature Requirement - Project Management System</div>
+          <div class="timeline-value">📋 FEATURE REQUIREMENT: Project Management System **CORE PROJECT FEATURES:** **1. PROJECT LIFECYCLE MANAGEMENT:** - Create new projects - Switch between existing projects - Hide projects (remove fr......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/8/2025<br>05:45 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Strategic Requirement - Ship APE Core Integration</div>
+          <div class="timeline-value">🎯 STRATEGIC REQUIREMENT: Ship APE Core Integration **CORE REQUIREMENT:** MPCM-Pro Desktop must integrate with Ship APE (shape-core) as the foundational memory and project management system. **INTE......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>05:40 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Critical Gap Identified - MCP Integration Missing from Roadmap</div>
+          <div class="timeline-value">🚨 CRITICAL GAP: MCP Integration Missing from Current Roadmap **PROBLEM IDENTIFIED:** - Project name is "MPCM-Pro Desktop" (Model Context Protocol) - Current roadmap focuses on conversation persist......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>05:39 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Sprint 6 Success - Core Functionality Complete</div>
+          <div class="timeline-value">🎉 SPRINT 6 SUCCESS: Core Functionality Complete **MAJOR MILESTONE ACHIEVED:** Sprint 6 conversation persistence goals are WORKING and COMPLETE! **VERIFIED WORKING FEATURES:** ✅ **Conversation Pers......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/8/2025<br>05:38 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">UI Enhancement Request - Role-Aware Spinner Text</div>
+          <div class="timeline-value">🎯 UI ENHANCEMENT REQUEST: Role-Aware Spinner Text
+
+**CURRENT BEHAVIOR:**
+- When sending messages, spinner displays "Claude is thinking"
+- Generic message regardless of selected role
+
+**REQUESTED IMPRO...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>05:38 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">QA Test Results - Conversation Selection Success</div>
+          <div class="timeline-value">✅ QA TEST RESULTS: Conversation Selection & Messaging Working
+
+**TEST 1: CONVERSATION SELECTION - SUCCESS ✅**
+- Manual Test: Clicked on "hello" conversation in sidebar
+- Result: Conversation successfu...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>05:34 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">QA Assessment - Current Application Status</div>
+          <div class="timeline-value">🎯 QA ASSESSMENT: Application Ready for Manual Testing **AUTOMATED TESTING SUCCESS:** ✅ **New Testing Pattern Works**: Peekaboo + clean process + manual analysis ✅ **Application Launches Cleanly**:......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>05:34 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">QA Test 2 - Conversation Selection Test</div>
+          <div class="timeline-value">🧪 QA TEST 2: Conversation Selection Test Plan
+
+**TESTING OBJECTIVE:**
+Test if clicking on saved conversations loads them properly
+
+**CURRENT STATE:**
+- 3 conversations visible in sidebar
+- All show "N...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>05:33 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">QA Test 1 - Initial Application State</div>
+          <div class="timeline-value">✅ QA TEST 1: Initial Application State Analysis **VISUAL VERIFICATION SUCCESSFUL:** Screenshot captured successfully using clean process + Peekaboo approach! **OBSERVED UI ELEMENTS:** 1. **Left Sid......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/8/2025<br>05:33 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">QA Testing Solution - Integrated Approach</div>
+          <div class="timeline-value">🎯 QA TESTING SOLUTION: Integrated Testing Pattern **RECOMMENDED APPROACH: Peekaboo + Manual Analysis** **WHY THIS APPROACH:** 1. Playwright+Electron has complex setup requirements 2. Our Peekaboo ......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>05:32 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">QA Testing Tool Issues Identified</div>
+          <div class="timeline-value">🐛 QA TESTING TOOL ISSUES IDENTIFIED **PROBLEMS OBSERVED:** 1. **Multiple Browser Conflicts**: Playwright opening multiple empty tabs instead of navigating to localhost:5174 2. **Electron Instance ......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>05:27 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">QA Testing Session 1 Started</div>
+          <div class="timeline-value">🧪 QA TESTING SESSION 1: Core Functionality
+
+**APP STARTUP STATUS:**
+✅ Application launches successfully
+✅ Vite dev server running on localhost:5174
+✅ Electron processes running (PIDs: 12544, 12429)
+✅ ...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="standard">
+        <div class="timeline-dot standard"></div>
+        <div class="timeline-date">7/8/2025<br>05:25 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type standard">standard</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">QA Test Plan - Core Functionality</div>
+          <div class="timeline-value">🧪 QA TEST PLAN: Core Functionality Validation **APP STARTUP & INITIALIZATION** ✅ Application starts without errors ✅ Vite dev server loads (port 5174) ✅ IPC handlers register successfully ✅ Claude......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/8/2025<br>05:24 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Sprint 6 Focus: Core Functionality Testing</div>
+          <div class="timeline-value">🎯 SPRINT 6 FOCUS DECISION: Core Functionality First
+
+**STRATEGIC DECISION:**
+- Defer macOS app bundle and PWA features to later sprints
+- Focus exclusively on rock-solid core functionality
+- Build sta...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>05:20 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Sprint 6 Backlog Update</div>
+          <div class="timeline-value">📋 SPRINT 6 BACKLOG UPDATED
+
+**NEW FEATURE REQUESTS ADDED:**
+1. ✅ PWA Frontend for Mobile Access
+   - Tags: feature-request, pwa, mobile-access, local-network, backlog
+   - Status: Concept phase, added...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/8/2025<br>05:14 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Feature Request: PWA Frontend for Mobile Access</div>
+          <div class="timeline-value">📱 FEATURE REQUEST: PWA Frontend for Mobile Access
+
+**CONCEPT:**
+Desktop: MPCM-Pro-Desktop Server (Electron-based, localhost)
+Mobile: PWA Frontend (served from desktop, accessed via local network)
+
+**T...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/8/2025<br>05:14 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Feature Request: StackBlitz-Style Development Environment</div>
+          <div class="timeline-value">🎯 FEATURE REQUEST: StackBlitz-Style Development Environment **CONCEPT:** Left Panel: Chat interface (existing) Right Panel: Live code preview/execution environment **TECHNICAL FEATURES:** 1. **Int......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>05:12 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">macOS App Bundle Issues Found</div>
+          <div class="timeline-value">🐛 MACOS APP BUNDLE ISSUES IDENTIFIED **SUCCESS CONFIRMED:** ✅ App bundle works and launches successfully ✅ Professional icon and dock integration working ✅ UI and basic functionality operational *......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>04:05 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">macOS App Bundle Created Successfully</div>
+          <div class="timeline-value">✅ MCOS APP BUNDLE CREATED SUCCESSFULLY!
+
+**COMPLETED FEATURES:**
+1. ✅ Professional app icon created (MPCM-Pro branding)
+2. ✅ Multiple icon formats generated (16px to 1024px)
+3. ✅ macOS .icns icon bund...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/8/2025<br>03:58 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Request: macOS App Bundle with Dock Icon</div>
+          <div class="timeline-value">🎯 USER REQUEST: macOS App Bundle with Dock Icon
+
+**REQUIREMENT:**
+- Create a proper macOS app bundle (.app) 
+- Add app icon for dock visibility
+- Enable reliable launching from dock/Applications folde...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/8/2025<br>03:56 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Conversation Selection Implementation Complete</div>
+          <div class="timeline-value">✅ CONVERSATION SELECTION IMPLEMENTATION COMPLETE **ADDED FUNCTIONALITY:** 1. ✅ Conversation click handlers in Sidebar 2. ✅ onConversationSelect prop passed from App to Sidebar 3. ✅ selectConversati......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>03:52 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Testing Results - Conversation Selection Issue</div>
+          <div class="timeline-value">🐛 TESTING RESULTS: Conversation Selection Not Working
+
+**WHAT'S WORKING ✅:**
+- Dynamic conversation count shows accurate data
+- Empty state displays properly when no conversations
+- New chat buttons t...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>03:50 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Testing Feedback - Conversation Loading Issue</div>
+          <div class="timeline-value">🐛 TESTING FEEDBACK: Conversation Loading Issue Found
+
+**PARTIAL SUCCESS:**
+✅ Real Conversation List Integration - Shows data but not clickable
+✅ Dynamic Conversation Count - Working correctly  
+✅ Empt...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>03:41 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Sprint 6 Testing Ready</div>
+          <div class="timeline-value">✅ APP RUNNING - READY FOR TESTING
+
+**FIXES IMPLEMENTED:**
+1. ✅ Fixed duplicate import causing compilation error  
+2. ✅ Replaced hardcoded conversation list with real API data
+3. ✅ Fixed conversation c...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/8/2025<br>03:39 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">New Chat Button Fix Implementation</div>
+          <div class="timeline-value">🔧 NEW CHAT BUTTON FIXES IMPLEMENTED **ISSUE 1: Hardcoded Conversation List - FIXED** - Problem: Sidebar showing mock conversation data instead of real API data - Solution: Updated conversation lis......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>03:36 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Sprint 6 Continuation Plan</div>
+          <div class="timeline-value">🎯 SPRINT 6 CONTINUATION: Conversation Persistence Implementation
+
+CURRENT STATE: Working on conversation persistence fixes identified in user images:
+
+PRIORITY 1: New Chat Button Fix
+- Issue: startNew...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>03:31 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Fresh Chat Experience Fix Applied</div>
+          <div class="timeline-value">🐛 FIXED: Role Selection Fresh Chat Experience **PROBLEM**: - When selecting role with no saved conversation, message area didn't refresh - Should show blank window for fresh start - Input area sho......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>03:21 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Conversation Persistence Working Successfully</div>
+          <div class="timeline-value">✅ CONVERSATION PERSISTENCE NOW WORKING!
+
+**CONFIRMED WORKING**:
+- conversationAPI is available in renderer
+- IPC communication successful: "Load project response: {success: true}"
+- Project data being...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>03:20 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Debugging Preload Script API Exposure</div>
+          <div class="timeline-value">🐛 DEBUGGING: conversationAPI Not Available in Renderer
+
+**PROBLEM**: 
+- `window.conversationAPI` returns `undefined` in browser console
+- conversationAPI available: false
+- TypeError when trying to ca...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>03:16 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Conversation Persistence IPC Issue Fixed</div>
+          <div class="timeline-value">🐛 FIXED: IPC Handler Registration Issue
+
+**PROBLEM**: 
+- Console errors: "No handler registered for 'conversation:loadProject'"
+- Conversation persistence completely broken
+- conversationAPI calls fai...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>02:41 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Debugging Conversation Persistence Issues</div>
+          <div class="timeline-value">🐛 DEBUGGING: Conversation Persistence Not Working
+
+**ISSUES REPORTED**:
+1. Conversation does not persist after app restart
+2. New chat buttons don't work
+
+**DEBUGGING STEPS ADDED**:
+✅ Added comprehens...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>02:37 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Issues Found - Conversation Persistence and New Chat Button</div>
+          <div class="timeline-value">🐛 ISSUES FOUND AFTER RESTART:
+
+1. **Conversation Persistence Not Working**
+   - User restarted app and conversation did not restore
+   - Need to debug storage/loading mechanism
+
+2. **New Chat Button N...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/8/2025<br>02:34 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Next Development Priorities</div>
+          <div class="timeline-value">🎯 NEXT DEVELOPMENT PRIORITIES **IMMEDIATE TESTING (Priority 1)**: 1. **Test Conversation Persistence** - Verify save/load works end-to-end - Start conversation in one role - Switch roles/restart a......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>02:33 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Conversation Persistence Implementation Complete</div>
+          <div class="timeline-value">✅ CONVERSATION PERSISTENCE IMPLEMENTATION COMPLETE **MAJOR FEATURE DELIVERED**: Full conversation persistence system **COMPLETED COMPONENTS**: 1. **ConversationStorage.ts** ✅ - Complete storage ser......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>02:30 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Chat Area Expansion Bug Fixed</div>
+          <div class="timeline-value">🐛 FIXED: Chat area expansion on message send
+
+**Problem**: Chat input area was automatically expanding to 50% viewport height every time a message was sent, causing jarring UX.
+
+**Root Cause**: 
+- `se...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>02:29 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Conversation Persistence Code Committed</div>
+          <div class="timeline-value">✅ COMMITTED: Conversation persistence WIP code
+
+**Commit Hash**: 980cc41
+**Files Added**:
+- src/main/services/ConversationStorage.ts (266 lines)
+- src/main/handlers/conversationHandlers.ts
+
+**Status**...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>02:21 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Sprint 6 Started: Core Storage Implementation</div>
+          <div class="timeline-value">🚀 **SPRINT 6 STARTED: Core Storage Implementation**
+
+**Current Sprint Goals:**
+1. ✅ Code committed (pre-sprint cleanup)
+2. 🔄 Complete ConversationStorage.ts implementation  
+3. ⏳ Create Storage IPC Ha...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/8/2025<br>02:21 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Sprint Roadmap: Conversation Persistence (Sprints 6-8)</div>
+          <div class="timeline-value"># 🗓️ MPCM-Pro Desktop: Conversation Persistence Roadmap ## 📊 Sprint History (Completed): - **Sprint 1**: Basic UI Foundation ✅ - **Sprint 2**: Text Colors & Resizable Input ✅ - **Sprint 3**: Inpu......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>02:20 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Conversation Persistence Implementation Status</div>
+          <div class="timeline-value">**CURRENT STATE**: Conversation persistence implementation in progress
+
+**COMPLETED**:
+✅ Technical design created for conversation persistence
+✅ ConversationStorage.ts service begun (266 lines written...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/8/2025<br>02:15 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Conversation Persistence Technical Design</div>
+          <div class="timeline-value">🏗️ TECHNICAL DESIGN: Conversation Persistence Implementation ## 📊 Current State Analysis ### ✅ What's Already Built: - **Types defined** - Message, RoleContext, Project interfaces exist - **React......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/8/2025<br>02:13 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Conversation Persistence Requirements</div>
+          <div class="timeline-value">📋 PRODUCT REQUIREMENTS: Conversation Persistence ## 🎯 Core Feature Requirement **User Story**: As a developer, I want my conversations to persist across app restarts so I can continue working on ......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/8/2025<br>02:11 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Resize Handle Complete Removal</div>
+          <div class="timeline-value">✅ COMPLETELY REMOVED: Resize handle and all related functionality **Problem**: The resize handle was causing issues and needed to be removed entirely. **Complete Removal Applied**: 1. **Removed HTM......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/8/2025<br>02:08 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Resize Handle Position Fix</div>
+          <div class="timeline-value">✅ MOVED: Resize handle relocated from chat input container to proper position **Problem**: The resize handle was positioned inside the chat input container, which was not the ideal location for use......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/8/2025<br>02:01 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Project Info Layout - CSS Specificity Fix</div>
+          <div class="timeline-value">✅ FINAL SOLUTION: Fixed CSS class name conflicts with proper scoping **Problem**: Both ChatArea and Sidebar were using the same `.project-info` class name, causing CSS conflicts. When one was modif......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/8/2025<br>02:00 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Project Info Layout Fix - Final Correct Solution</div>
+          <div class="timeline-value">✅ FINAL CORRECT FIX: Project info and Claude Code status now display inline **Problem**: In ChatArea, the project info (folder icon + project name) and "Claude Code Ready" status were stacking vert......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/8/2025<br>01:56 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Project Info Layout Fix - Correct Issue</div>
+          <div class="timeline-value">✅ CORRECT FIX APPLIED: div.project-info vertical layout issue **Problem**: User reported that `div.project-info` was displaying vertically instead of inline. **Root Cause Found**: - In `/Users/bria......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/8/2025<br>01:54 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Next Steps - Layout Fix Testing</div>
+          <div class="timeline-value">🎯 IMMEDIATE NEXT STEPS: Layout Fix Testing & Validation **Priority 1: Visual Validation** 1. **Open Settings Panel**: Launch app and open Settings 2. **Navigate to Claude Code Tab**: Verify diagno......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/8/2025<br>01:53 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Project Info Layout Fix Applied</div>
+          <div class="timeline-value">✅ FIXED: Settings diagnostic rows vertical layout issue **Root Cause**: - Missing `flex-wrap: nowrap` property allowed flex items to wrap - Long file paths in diagnostic values were causing layout ......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>01:53 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Project Info Layout Vertical Display</div>
+          <div class="timeline-value">🐛 ISSUE FOUND: Settings diagnostic rows displaying vertically instead of inline
+
+**Problem**: User reports that project info layout is displaying vertically instead of inline (horizontal).
+
+**Investig...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>05:41 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">All UI Issues Finally Resolved</div>
+          <div class="timeline-value">✅ ALL UI ISSUES COMPLETELY RESOLVED
+
+Final fixes applied:
+- Role badges: Green text on translucent green backgrounds
+- Preview text: Limited to 4-5 words max
+- Project info: Fixed stacked layout issue...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>05:34 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Role Badges Final Styling Complete</div>
+          <div class="timeline-value">✅ ROLE BADGES STYLING COMPLETE
+
+Final styling achieved:
+- Green text (#15803d) 
+- Dark translucent green background (rgba(34, 197, 94, 0.1))
+- More rounded corners (8px border-radius)
+- Proper positio...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>04:36 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Textarea Width Fix Applied</div>
+          <div class="timeline-value">✅ TEXTAREA WIDTH ISSUE FIXED
+
+**Problem:** Textarea set to width: 100% was getting squeezed in narrow layouts.
+
+**Solution Applied:**
+- Reduced .chat-input max-width: 600px → 500px  
+- Increased .chat...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>04:00 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">UI Issues Completely Resolved</div>
+          <div class="timeline-value">✅ ALL UI ISSUES RESOLVED
+
+**Final Fixes Applied:**
+1. **Preview Text Truncation** ✅ - Changed to white-space: nowrap + text-overflow: ellipsis
+2. **Preview Width** ✅ - Reduced max-width from 180px to ...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>03:54 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Sprint 5 Complete - Chat Sidebar Fixed</div>
+          <div class="timeline-value">✅ SPRINT 5 COMPLETE: Chat Sidebar Layout Fixed
+
+**Issues Fixed:**
+1. **Chat Section Default State** ✅ - Now defaults to expanded (chats: true)
+2. **Preview Text Length** ✅ - Reduced from 2 lines to 1 ...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>03:52 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">QA Assessment Sprint 4 Reality Check</div>
+          <div class="timeline-value">🐛 QA ASSESSMENT: Sprint 4 "Complete" Status is INCORRECT
+
+REALITY CHECK: Multiple UI issues still exist despite Sprint 4 being marked complete.
+
+**CRITICAL ISSUES FOUND:**
+1. **Chat Sidebar Layout**: ...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>03:44 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">QA Testing In Progress - Initial Visual Inspection</div>
+          <div class="timeline-value">🔍 QA TESTING IN PROGRESS: Visual Inspection Complete
+
+**PASSED TESTS:**
+✅ Title positioning - No overlap with window controls
+✅ App startup - Loads successfully with Claude Code Ready
+
+**PENDING INTER...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>03:26 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Sprint 4 Complete - All UI Issues Fixed</div>
+          <div class="timeline-value">✅ SPRINT 4 COMPLETE: All UI Issues Fixed
+
+**Issues Fixed:**
+1. **Title positioning** ✅ - Added 26px top padding to avoid window controls
+2. **Sidebar resizable** ✅ - Drag handle, 240-500px range, remo...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>03:09 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Sidebar Syntax Error Fixed</div>
+          <div class="timeline-value">🐛 FIXED: Sidebar JSX Syntax Error
+
+**Root Cause:** Broken conditional rendering structure around line 130
+
+**Fix Applied:**
+- Wrapped all sidebar sections in React Fragment `<>...</>`
+- Proper conditi...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>02:48 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Sprint 3 Complete - Input Size and Sidebar Collapse</div>
+          <div class="timeline-value">✅ SPRINT 3 COMPLETE: Input Size & Sidebar Collapse
+
+**Fixed Issues:**
+1. **Input Size Fixed** ✅
+   - Height: 120px → 280px default
+   - Proper textarea padding and line-height
+   - Better min/max heig...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>02:18 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Sprint 3 Fixed - Input Size and Table Rendering</div>
+          <div class="timeline-value">✅ SPRINT 3: Critical UX Fixes Applied
+
+**Issues Fixed:**
+1. **Prompt Box Too Small** ✅
+   - Default height: 120px → 200px
+   - Min height: 44px → 60px  
+   - Max height: 120px → 300px
+   - Container m...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>01:29 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Sprint 2 Complete - Text Colors Resizable Input Markdown</div>
+          <div class="timeline-value">✅ SPRINT 2 COMPLETE: Core UX Improvements
+
+Story 1: Text Color Consistency ✅
+- Sidebar text: #a1a1aa → #71717a (darker)
+- Chat content: #ffffff → #d1d5db (light grey)
+
+Story 2: Resizable Input Panel ✅...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>01:27 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Sprint 2 Starting: Text Colors & Resizable Input</div>
+          <div class="timeline-value">🚀 SPRINT 2 STARTED: Core UX Improvements
+
+Stories:
+1. Text Color Consistency (Effort: 1)
+2. Resizable Input Panel (Effort: 3) 
+3. Markdown Rendering (Effort: 5)
+
+Sprint 1 Complete: v1.1.0 tagged
+- UI ...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>01:02 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Role Switching Status Assessment</div>
+          <div class="timeline-value">✅ ROLE SWITCHING: BASIC IMPLEMENTATION WORKING
+
+Current Implementation:
+- UI role selection ✅ Working
+- Role context passed to Claude Code ✅ Working
+- Role displayName sent as string context ✅ Working...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/8/2025<br>12:50 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">New UI Enhancement Requirements</div>
+          <div class="timeline-value">NEW UI ENHANCEMENT REQUIREMENTS:
+
+1. **Text Color Adjustments**:
+   - Left panel text: Make slightly darker grey
+   - Chat area text: Make light grey
+
+2. **Resizable Prompt Panel**: 
+   - Make prompt ...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>12:39 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Model Selector Updated with Complete List</div>
+          <div class="timeline-value">✅ Updated model selector with complete Claude model list:
+
+- Claude Opus 4 (claude-opus-4-20250514) 
+- Claude Sonnet 4 (claude-sonnet-4-20250514) - DEFAULT
+- Claude Sonnet 3.7 (claude-3-7-sonnet-20250...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>12:38 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Tooltips Added for UI Clarity</div>
+          <div class="timeline-value">✅ Added descriptive tooltips to non-self-explanatory UI elements:
+
+CHAT AREA:
+- Share button: "Share conversation"
+- New chat (header): "Start new conversation"
+- Copy button: "Copy message to clipboa...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>12:36 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Orange Color & Text Color Updates Applied</div>
+          <div class="timeline-value">✅ UPDATED COLORS TO MATCH CLAUDE'S DESIGN:
+
+Orange: #ff6b35 → #d97548 (darker, matches Claude)
+Hover: #e55a2b → #c5694b
+Text: #888 → #a1a1aa (lighter grey like Claude)
+
+Applied to:
+- New chat button (...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>12:32 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">UI Improvements Implementation Complete</div>
+          <div class="timeline-value">✅ COMPLETED ALL 8 UI IMPROVEMENTS:
+
+1. ✅ New chat button: Shrunk 50% & centered
+2. ✅ New chat icon (header): Orange color applied
+3. ✅ Send button: Already orange (#ff6b35)
+4. ✅ Auto-scroll: Added use...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="reference">
+        <div class="timeline-dot reference"></div>
+        <div class="timeline-date">7/8/2025<br>12:32 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type reference">reference</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">UI Audit - Non-Functional Elements</div>
+          <div class="timeline-value">AUDIT OF NON-FUNCTIONAL UI ELEMENTS:
+
+1. **Share Conversation Button** (chat header): Should export/share the current conversation with sharing options.
+2. **Copy Message Button**: Should copy the mes...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/8/2025<br>12:30 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">UI Improvement Requirements List</div>
+          <div class="timeline-value">8 UI improvements needed: 1) Shrink new chat button 50% & center, 2) Orange color new chat icon, 3) Orange send button, 4) Auto-scroll chat responses, 5) Model selector (Sonnet 3.5 to Opus 4), 6) Fixe...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/8/2025<br>12:25 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Frontend ML Engineer Role Created</div>
+          <div class="timeline-value">Created specialized Frontend ML Engineer role based on 2025 industry research. Focus areas: React/Electron mastery, TypeScript expertise, ML integration patterns, real-time data visualization, desktop...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>12:19 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Claude Code Working - UI Response Issue</div>
+          <div class="timeline-value">Claude Code SDK working (108 chars, 120 tokens out) but responses not showing in UI. Need to check response extraction in message.content[0].text path and frontend rendering.</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/8/2025<br>12:17 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Function Constructor ESM Import Fix</div>
+          <div class="timeline-value">ESM Fix: Using Function constructor approach - new Function('specifier', 'return import(specifier)') - to bypass TypeScript compilation of dynamic imports. This preserves the actual import() syntax in...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/8/2025<br>12:16 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">ESM Dynamic Import Fix - eval() Solution</div>
+          <div class="timeline-value">PERMANENT FIX: Use eval('import')() instead of import() for ESM modules in TypeScript CommonJS output. TypeScript compiles import() to require() which breaks ESM. The eval prevents this compilation tr...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>12:14 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">IPC Handlers Fixed - Claude Code Working</div>
+          <div class="timeline-value">SUCCESS: Fixed IPC handler errors by enabling setupClaudeCodeHandlers() import and call in main.ts. Claude Code v1.0.43 detected and working. No more "No handler registered" errors.</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>12:12 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">TypeScript rootDir Path Issue Fixed</div>
+          <div class="timeline-value">ISSUE FIXED: TypeScript was outputting to dist/main/main/ instead of dist/main/ due to missing "rootDir": "." in tsconfig. Added rootDir to fix path structure. Always set rootDir when using custom out...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>12:11 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">ESM/CommonJS Claude Code Fix Applied</div>
+          <div class="timeline-value">SUCCESS: Fixed ESM/CommonJS issue by: 1) Adding "noEmit": false to src/main/tsconfig.json, 2) Using dynamic import() for @anthropic-ai/claude-code SDK, 3) Updated TS target to ES2022. App now starts w...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/8/2025<br>12:10 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">noEmit Build Killer - Remember This</div>
+          <div class="timeline-value">SHARED KNOWLEDGE: "noEmit": true in root TypeScript configs kills builds silently. ALWAYS check this first when builds don't output files. Override with "noEmit": false in any config that needs to emi...</div>
+          <div class="timeline-meta">
+            Shared
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="standard">
+        <div class="timeline-dot standard"></div>
+        <div class="timeline-date">7/8/2025<br>12:10 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type standard">standard</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Build Fix Standard: noEmit Override</div>
+          <div class="timeline-value">STANDARD FIX: When TypeScript build fails silently, check for "noEmit": true in parent tsconfig. Override with "noEmit": false in child configs that need compilation output. This is the #1 cause of si...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/8/2025<br>12:10 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">CRITICAL: noEmit TypeScript Issue</div>
+          <div class="timeline-value">CRITICAL RECURRING ISSUE: Root tsconfig.json has "noEmit": true which prevents TypeScript compilation output. ALWAYS override with "noEmit": false in any tsconfig that needs to emit files. This breaks...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="standard">
+        <div class="timeline-dot standard"></div>
+        <div class="timeline-date">7/8/2025<br>12:05 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type standard">standard</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Module System Strategy - ESM/CommonJS Conflicts</div>
+          <div class="timeline-value">CRITICAL BUILD PATTERN: Modern npm packages use ESM (.mjs) but Electron main process expects CommonJS. Solutions: 1) Use dynamic import() for ESM packages, 2) Configure package.json type:"module", 3) ...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/8/2025<br>12:04 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Electron App Successfully Started</div>
+          <div class="timeline-value">Fixed missing @anthropic-ai/sdk dependency. TypeScript compilation successful. Electron app now running and visible on PID 12974 with Vite server on localhost:5174.</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/7/2025<br>11:58 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">App Started for Testing</div>
+          <div class="timeline-value">App successfully started and running on PID 12174 with Vite server on localhost:5174. Ready for user testing session.</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/7/2025<br>05:54 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">SDK Response Extraction Fixed</div>
+          <div class="timeline-value">## ✅ SDK Response Extraction Fixed
+
+### Root Cause Found:
+- Claude Code SDK returns responses in `message.content[0].text` format
+- Previous code was looking for `content` directly on message
+- Sessio...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/7/2025<br>05:50 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">General Chat Mode Implemented</div>
+          <div class="timeline-value">## ✅ General Chat Mode Implemented ### Changes Made: 1. **Sidebar Enhancement**: Added "General Chat" as first option in Roles section - 💬 icon with blue background (#6366f1) - "Direct Claude conv......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/7/2025<br>05:45 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">TypeScript SDK Implementation Complete</div>
+          <div class="timeline-value">## ✅ TypeScript SDK Implementation Complete ### Fixed Issues: 1. **TypeScript Errors**: Updated test file to use correct property names (`appendSystemPrompt` instead of `systemPrompt`) 2. **Jest ES......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/7/2025<br>05:37 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Claude Code SDK Implementation - JSON Format</div>
+          <div class="timeline-value">## ✅ Corrected: Claude Code SDK Implementation
+
+### User Correction:
+Both shape-chat and claude-remote use TypeScript Claude Code SDK from official docs
+
+### Updated Implementation:
+- Using `claude --...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/7/2025<br>05:33 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Claude Code Fix Applied - Simple Text Format</div>
+          <div class="timeline-value">## ✅ Claude Code Fix - Based on Working Examples
+
+### Root Cause:
+- Shape-chat uses Anthropic SDK directly (not Claude Code CLI)
+- Claude-remote uses simple `claude --print --output-format text`
+- Our...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/7/2025<br>05:27 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Claude Code Response Fix Applied</div>
+          <div class="timeline-value">## ✅ Claude Code Response Fix Applied
+
+### Changes Made:
+1. **Output Format**: Changed from `stream-json` to `json` for reliability
+2. **Method**: Use `executeClaudeCommand()` instead of streaming met...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/7/2025<br>05:25 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Claude Code Authentication Issue Found</div>
+          <div class="timeline-value">## 🎯 Root Cause Found: Claude Code Authentication
+
+### Issue:
+Claude Code hanging on API calls due to missing authentication
+- Config shows: `"hasTrustDialogAccepted": false`
+- No API keys or authenti...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/7/2025<br>05:22 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Settings Panel Z-Index Issue - Expanded Panels</div>
+          <div class="timeline-value">## 🐛 Settings Panel Disappears When Panels Expanded
+
+### Issue:
+- Settings panel (z-index: 9999) disappears when sidebar sections are expanded
+- Likely CSS stacking context issue or higher z-index som...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/7/2025<br>05:17 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">UI Fixes Applied - Settings Panel and Collapsed Sections</div>
+          <div class="timeline-value">## ✅ UI Fixes Applied
+
+### Problems Fixed:
+1. **Settings Panel Visibility**: Increased z-index from 1000 to 9999 to ensure settings modal stays on top
+2. **Sidebar Sections Start Collapsed**: Changed ...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/7/2025<br>05:10 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">UI Improvements Required - Settings Panel and General Chat</div>
+          <div class="timeline-value">## 🎯 UI Improvements Required
+
+### Issues to Fix:
+1. **Settings Panel**: Should be fixed position, other items slide under it
+2. **Sidebar State**: Start collapsed by default  
+3. **General Chat**: Ad...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/7/2025<br>05:06 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Ready for Testing - Claude Code Working</div>
+          <div class="timeline-value">## ✅ Ready for Testing - Claude Code Working
+
+### Current Status:
+- ✅ Electron app running on port 5174
+- ✅ Claude Code detected at `/opt/homebrew/bin/claude` 
+- ✅ IPC handlers registered successfully...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/7/2025<br>05:01 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Claude Code Authentication Issue - Root Cause Found</div>
+          <div class="timeline-value">## 🐛 Claude Code Authentication Issue - Root Cause Found ### Issue Summary: Claude Code commands are hanging, including basic ones: - `claude -p "hello"` - Hangs indefinitely - `claude auth status......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="reference">
+        <div class="timeline-dot reference"></div>
+        <div class="timeline-date">7/7/2025<br>04:57 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type reference">reference</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Claude Code Documentation Review - Implementation Fixes Needed</div>
+          <div class="timeline-value">## 📚 Claude Code Documentation Analysis ### Key Issues Found: 1. **Wrong Tool Format**: We used `Bash(ls),Bash(cat),Bash(grep)` but should be `"Bash(ls)" "Bash(cat)" "Bash(grep)"` 2. **MCP Tool Fo......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/7/2025<br>04:53 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Browser Test Success - Issue Isolated to Electron</div>
+          <div class="timeline-value">## ✅ Browser Test Success - Issue Isolated
+
+### Browser Test Results:
+- ✅ UI loads without errors
+- ✅ Settings panel opens correctly  
+- ✅ Proper error handling shows "Claude Code API not available in...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/7/2025<br>04:35 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">EPIPE Error - Switch to Browser Testing</div>
+          <div class="timeline-value">## 🐛 EPIPE Error in Electron
+
+### Error:
+```
+Error: write EPIPE
+at afterWriteDispatched (node:internal/stream_base_commons:160:15)
+```
+
+### Analysis:
+- EPIPE = "broken pipe" error
+- Likely issue with ...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/7/2025<br>04:26 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Claude Code Message Issue - No Response</div>
+          <div class="timeline-value">## 🐛 Claude Code Message Issue - No Response
+
+### Problem:
+- User tried sending a message through UI
+- No response received from Claude Code
+- Need to debug the message flow
+
+### Likely Causes:
+1. Fro...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/7/2025<br>04:24 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Next Development Tasks - Claude Code Testing</div>
+          <div class="timeline-value">## 🎯 Next Development Tasks - Priority Order ### IMMEDIATE TESTING (Required Now): 1. **✅ Verify Electron App Opens** - Should see desktop app window 2. **Test Settings Panel** - Check if Claude C......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/7/2025<br>04:23 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Claude Code Integration Success - Port 5174</div>
+          <div class="timeline-value">## ✅ Claude Code Integration Working! ### Major Breakthrough: **All critical issues resolved:** 1. **✅ Port Collision Fixed** - Switched from port 3000 to **port 5174** 2. **✅ Claude Code Detection......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/7/2025<br>04:09 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Claude Code Issue Root Cause Found</div>
+          <div class="timeline-value">## 🐛 Claude Code Issue - ROOT CAUSE FOUND
+
+### Problem:
+**"Error: No handler registered for 'claude-code:check-availability'"**
+
+### Root Cause:
+- `setupClaudeCodeHandlers()` is not properly registeri...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/7/2025<br>04:03 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Claude Code API Issue - window.claudeCode Not Available</div>
+          <div class="timeline-value">## 🐛 Claude Code API Issue
+
+### Problem:
+- Settings shows "Claude Code API not available in renderer"
+- Configuration section can't load because `window.claudeCode` is undefined
+- Despite preload.ts e...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/7/2025<br>03:54 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Claude Code Settings Enhancement - Complete</div>
+          <div class="timeline-value">## ✅ Claude Code Settings Enhancement - COMPLETE ### Problem Solved: - Generic/useless Claude Code test that just sent hello messages - Missing visibility into Claude Code configuration and environ......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/7/2025<br>03:51 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Settings Enhancement - Claude Code Config Needed</div>
+          <div class="timeline-value">## 🎯 Settings Enhancement Required
+
+### Current Issues:
+- Claude Code test just sends generic message (not useful)
+- Missing actual Claude Code configuration details
+- No visibility into working envir...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/7/2025<br>03:46 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">CSS Import Path Fix</div>
+          <div class="timeline-value">## 🔧 CSS Import Path Fixed
+
+### Error:
+```
+Failed to resolve import "../styles/Settings.css" from "src/renderer/components/Settings/Settings.tsx"
+```
+
+### Root Cause:
+- Settings component in `/compone...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/7/2025<br>03:45 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Settings Styling Fix Applied</div>
+          <div class="timeline-value">## 🎨 Settings Styling Fix Applied
+
+### Problem:
+- Settings modal was using Tailwind CSS classes but project doesn't have Tailwind
+- Missing dark theme styling
+- Unstyled/broken layout
+
+### ✅ Solution:...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/7/2025<br>03:43 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Settings Fix Verification - Partial Success</div>
+          <div class="timeline-value">## ✅ Settings Runtime Error - FIXED
+
+### SUCCESS:
+- Settings modal opens without crashes
+- No more "process is not defined" error
+- System info loading properly ("Loading..." displayed)
+- Error bounda...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/7/2025<br>03:37 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Settings Fix Success - Styling Issues Remain</div>
+          <div class="timeline-value">## ✅ SUCCESS: Settings Runtime Error Fixed!
+
+### What's Working:
+- Settings modal opens without crashing
+- No more "process is not defined" error
+- System info loads (shows "Loading..." indicating asy...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="todo">
+        <div class="timeline-dot todo"></div>
+        <div class="timeline-date">7/7/2025<br>03:35 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type todo">todo</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Development Plan - Post Settings Fix</div>
+          <div class="timeline-value">## 🎯 Development Roadmap - Post Settings Fix
+
+### ✅ COMPLETED:
+- Critical runtime errors in Settings fixed
+- Error boundaries implemented
+- Secure IPC pattern for system info
+
+### 🚀 IMMEDIATE PRIORITI...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="code">
+        <div class="timeline-dot code"></div>
+        <div class="timeline-date">7/7/2025<br>03:34 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type code">code</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Settings Runtime Error - Fixed</div>
+          <div class="timeline-value">## 🔧 Critical Runtime Error FIXED ### Problem Solved: - **ReferenceError: process is not defined** in Settings.tsx:275 - Settings component causing black screen crashes - Missing error boundaries ......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="issue">
+        <div class="timeline-dot issue"></div>
+        <div class="timeline-date">7/7/2025<br>03:32 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type issue">issue</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Critical Runtime Errors - Settings Component</div>
+          <div class="timeline-value">## 🚨 Critical Runtime Errors Found
+
+From user screenshots, multiple errors affecting app stability:
+
+1. **ReferenceError: process is not defined**
+   - Location: Settings.tsx:275:51  
+   - Issue: Rend...</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/7/2025<br>03:05 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">Session End - Settings Screen Black Issue</div>
+          <div class="timeline-value"># Session End - Settings Screen Black Issue ## 🐛 Current Issue: - Settings modal appears but screen is black - Likely CSS styling issue or missing styles ## ✅ What Was Completed: 1. **Testing Infr......</div>
+          <div class="timeline-meta">
+            mpcm-pro-desktop
+          </div>
+        </div>
+      </div>
+    
+  </div>
+  
+  <script>
+    function filterTimeline(type) {
+      const buttons = document.querySelectorAll('.filter-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      const entries = document.querySelectorAll('.timeline-entry');
+      entries.forEach(entry => {
+        if (type === 'all' || entry.dataset.type === type) {
+          entry.style.display = 'block';
+        } else {
+          entry.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

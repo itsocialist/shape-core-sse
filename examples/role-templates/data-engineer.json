@@ -1,0 +1,17 @@
+{
+  "id": "data-engineer",
+  "name": "Data Engineer",
+  "description": "Designs and maintains data pipelines, ETL processes, and data infrastructure",
+  "base_role_id": "developer",
+  "focus_areas": [
+    "data-pipelines",
+    "etl",
+    "data-quality",
+    "data-modeling",
+    "analytics",
+    "performance",
+    "scalability"
+  ],
+  "default_tags": ["data", "pipeline", "etl", "analytics"],
+  "preferred_context_types": ["config", "decision", "issue", "code"]
+}

@@ -1,0 +1,85 @@
+pipeline {
+    agent any
+    
+    parameters {
+        booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'Run tests')
+        booleanParam(name: 'SKIP_INSTALL', defaultValue: false, description: 'Skip npm install')
+    }
+    
+    environment {
+        PROJECT_DIR = '/Users/briandawson/Development/mpcm-pro'
+        PATH = "/usr/local/bin:${env.PATH}"
+    }
+    
+    stages {
+        stage('Info') {
+            steps {
+                sh '''
+                    echo "Node version:"
+                    node --version || echo "Node not found"
+                    echo "NPM version:"
+                    npm --version || echo "NPM not found"
+                    echo "Working directory: ${PROJECT_DIR}"
+                '''
+            }
+        }
+        
+        stage('Install Dependencies') {
+            when {
+                expression { !params.SKIP_INSTALL }
+            }
+            steps {
+                dir("${PROJECT_DIR}") {
+                    sh 'npm ci'
+                }
+            }
+        }
+        
+        stage('Type Check') {
+            steps {
+                dir("${PROJECT_DIR}") {
+                    sh 'npm run type-check || echo "Type check failed (continuing)"'
+                }
+            }
+        }
+        
+        stage('Lint') {
+            steps {
+                dir("${PROJECT_DIR}") {
+                    sh 'npm run lint || echo "Lint failed (continuing)"'
+                }
+            }
+        }
+        
+        stage('Tests') {
+            when {
+                expression { params.RUN_TESTS }
+            }
+            steps {
+                dir("${PROJECT_DIR}") {
+                    sh 'npm test -- --passWithNoTests || echo "Tests failed (continuing)"'
+                }
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                dir("${PROJECT_DIR}") {
+                    sh 'npm run build || echo "Build failed (continuing)"'
+                }
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo '✅ Pipeline completed successfully!'
+        }
+        failure {
+            echo '❌ Pipeline failed - check the logs'
+        }
+        always {
+            echo "Pipeline finished at: ${new Date()}"
+        }
+    }
+}

@@ -1,0 +1,39 @@
+digraph "mpcm-pro" {
+  rankdir=LR;
+  node [shape=box, style=rounded];
+  graph [fontsize=10];
+
+  // Node definitions
+  "project_3" [label="mpcm-pro", fillcolor="#4CAF50", style=filled, shape=box];
+  "type_note" [label="note\n(5)", fillcolor="#FF9800", style=filled, shape=diamond, width=1.6094379124341003];
+  "type_status" [label="status\n(2)", fillcolor="#FF9800", style=filled, shape=diamond, width=1];
+  "type_config" [label="config\n(3)", fillcolor="#FF9800", style=filled, shape=diamond, width=1.0986122886681096];
+  "type_reference" [label="reference\n(1)", fillcolor="#FF9800", style=filled, shape=diamond, width=1];
+  "type_decision" [label="decision\n(3)", fillcolor="#FF9800", style=filled, shape=diamond, width=1.0986122886681096];
+  "type_standard" [label="standard\n(1)", fillcolor="#FF9800", style=filled, shape=diamond, width=1];
+  "context_14" [label="sprint1-final-plan", fillcolor="#9C27B0", style=filled, shape=box];
+  "context_12" [label="qa-sprint1-review", fillcolor="#9C27B0", style=filled, shape=box];
+  "context_10" [label="architect-sprint1-review", fillcolor="#9C27B0", style=filled, shape=box];
+  "context_9" [label="sprint-1-core-shaping-objectiv...", fillcolor="#9C27B0", style=filled, shape=box];
+
+  // Edge definitions
+  "project_3" -> "type_note" [];
+  "project_3" -> "type_note" [];
+  "project_3" -> "type_note" [];
+  "project_3" -> "type_note" [];
+  "project_3" -> "type_note" [];
+  "project_3" -> "type_status" [];
+  "project_3" -> "type_status" [];
+  "project_3" -> "type_config" [];
+  "project_3" -> "type_config" [];
+  "project_3" -> "type_config" [];
+  "project_3" -> "type_reference" [];
+  "project_3" -> "type_decision" [];
+  "project_3" -> "type_decision" [];
+  "project_3" -> "type_decision" [];
+  "project_3" -> "type_standard" [];
+  "type_decision" -> "context_14" [];
+  "type_standard" -> "context_12" [];
+  "type_decision" -> "context_10" [];
+  "type_decision" -> "context_9" [];
+}

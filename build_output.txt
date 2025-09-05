@@ -1,0 +1,4 @@
+
+> @briandawson/mpcm-pro@0.3.2 build
+> tsc
+

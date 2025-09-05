@@ -1,0 +1,13 @@
+# Basic Tool Validation Tests
+# Run these to verify tools are working correctly
+# Each line is a separate prompt to enter
+
+List all my projects
+Show me the context for project mcp-context-memory
+List available roles
+What's my current role for mcp-context-memory?
+Switch to architect role for mcp-context-memory
+Store this decision: We'll use a microservices architecture
+Switch to developer role
+Create a handoff to developer with summary: Architecture phase complete, ready for implementation
+Show me role handoffs for mcp-context-memory

@@ -1,0 +1,17 @@
+{
+  "id": "technical-writer",
+  "name": "Technical Writer",
+  "description": "Creates and maintains documentation, tutorials, and user guides",
+  "base_role_id": "developer",
+  "focus_areas": [
+    "documentation",
+    "tutorials",
+    "api-docs",
+    "user-guides",
+    "examples",
+    "clarity",
+    "accessibility"
+  ],
+  "default_tags": ["docs", "tutorial", "guide"],
+  "preferred_context_types": ["note", "reference", "standard", "todo"]
+}

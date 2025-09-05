@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>mpcm-pro Timeline</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 20px;
+      background: #f5f5f5;
+    }
+    h1 {
+      color: #333;
+      border-bottom: 2px solid #4CAF50;
+      padding-bottom: 10px;
+    }
+    .timeline {
+      position: relative;
+      padding: 20px 0;
+    }
+    .timeline-line {
+      position: absolute;
+      left: 50px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #ddd;
+    }
+    .timeline-entry {
+      position: relative;
+      margin-bottom: 30px;
+      padding-left: 80px;
+    }
+    .timeline-dot {
+      position: absolute;
+      left: 42px;
+      top: 5px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      background: #4CAF50;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .timeline-dot.decision { background: #2196F3; }
+    .timeline-dot.code { background: #FF9800; }
+    .timeline-dot.standard { background: #9C27B0; }
+    .timeline-dot.status { background: #4CAF50; }
+    .timeline-dot.todo { background: #F44336; }
+    .timeline-dot.note { background: #607D8B; }
+    .timeline-dot.issue { background: #FF5722; }
+    
+    .timeline-date {
+      position: absolute;
+      left: -80px;
+      top: 5px;
+      width: 100px;
+      text-align: right;
+      color: #666;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .timeline-card {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .timeline-type {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: white;
+    }
+    .timeline-type.decision { background: #2196F3; }
+    .timeline-type.code { background: #FF9800; }
+    .timeline-type.standard { background: #9C27B0; }
+    .timeline-type.status { background: #4CAF50; }
+    .timeline-type.todo { background: #F44336; }
+    .timeline-type.note { background: #607D8B; }
+    .timeline-type.issue { background: #FF5722; }
+    
+    .timeline-key {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    .timeline-value {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .timeline-meta {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #999;
+    }
+    .filters {
+      margin-bottom: 30px;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .filter-btn {
+      padding: 5px 15px;
+      margin-right: 10px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      background: white;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .filter-btn.active {
+      background: #4CAF50;
+      color: white;
+      border-color: #4CAF50;
+    }
+  </style>
+</head>
+<body>
+  <h1>mpcm-pro Timeline</h1>
+  
+  <div class="filters">
+    <button class="filter-btn active" onclick="filterTimeline('all')">All</button>
+    <button class="filter-btn" onclick="filterTimeline('decision')">Decisions</button>
+    <button class="filter-btn" onclick="filterTimeline('code')">Code</button>
+    <button class="filter-btn" onclick="filterTimeline('status')">Status</button>
+    <button class="filter-btn" onclick="filterTimeline('issue')">Issues</button>
+  </div>
+  
+  <div class="timeline">
+    <div class="timeline-line"></div>
+    
+      <div class="timeline-entry" data-type="note">
+        <div class="timeline-dot note"></div>
+        <div class="timeline-date">7/12/2025<br>05:34 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type note">note</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">context-management-tools-suite</div>
+          <div class="timeline-value">Comprehensive Context Management Tools Suite Added (July 12, 2025):
+
+New NPM Scripts:
+1. **analyze-context**: Database analytics showing projects, roles, entry types, sizes
+2. **list-context**: List a...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="note">
+        <div class="timeline-dot note"></div>
+        <div class="timeline-date">7/12/2025<br>05:13 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type note">note</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">memory-optimization-export-feature</div>
+          <div class="timeline-value">Enhanced Memory Optimization with Export Feature (July 12, 2025):
+
+Added automatic data export to memory optimization script for safety:
+
+1. **Automatic Export**: Script now exports all data before op...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="note">
+        <div class="timeline-dot note"></div>
+        <div class="timeline-date">7/12/2025<br>05:09 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type note">note</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">database-clarification</div>
+          <div class="timeline-value">Important Database Clarification (July 12, 2025):
+
+Shape Core uses TWO databases in ~/.shape-core/:
+
+1. **shape-core.db** (1.6MB) - MAIN DATABASE
+   - Used by Ship APE MCP tools
+   - Contains all proj...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="note">
+        <div class="timeline-dot note"></div>
+        <div class="timeline-date">7/12/2025<br>05:03 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type note">note</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">memory-optimization-cli-script</div>
+          <div class="timeline-value">Added command-line script for memory optimization (July 12, 2025):
+
+Location: scripts/optimize-memory.ts
+
+Usage:
+- npm run optimize-memory (performs optimization)
+- npm run optimize-memory:dry-run (an...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/12/2025<br>04:30 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">recent-commits-summary</div>
+          <div class="timeline-value">Recent commits show the project has undergone a rebranding from MPCM to Shape/Ship APE:
+
+Latest commits:
+- ca7d6d7: Complete database recovery and final rebranding updates
+- 5ddbc4d: PM_REVIEW marker ...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="config">
+        <div class="timeline-dot config"></div>
+        <div class="timeline-date">7/12/2025<br>04:29 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type config">config</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">git-repository-info</div>
+          <div class="timeline-value">Git repository: git@github.com:itsocialist/shape-core.git
+Main branch: main
+Current branches include:
+- main
+- feature/adapter-swappability  
+- feature/shape-rebranding
+
+The project appears to have un...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="config">
+        <div class="timeline-dot config"></div>
+        <div class="timeline-date">7/12/2025<br>04:29 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type config">config</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">repository-location</div>
+          <div class="timeline-value">Primary repository: /Users/briandawson/workspace/shape-core
+This is the main implementation directory for MPCM-Pro (now Ship APE Core).
+
+Related projects:
+- /Users/briandawson/workspace/mpcm-pro-deskt...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="status">
+        <div class="timeline-dot status"></div>
+        <div class="timeline-date">7/12/2025<br>04:29 AM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type status">status</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">current-implementation-status</div>
+          <div class="timeline-value">MPCM-Pro implementation is located in /Users/briandawson/workspace/shape-core. The project has been rebranded as "Ship APE Core" (Shape APE Core) as seen in the index.ts file. Current state: 1. Mai......</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="reference">
+        <div class="timeline-dot reference"></div>
+        <div class="timeline-date">7/6/2025<br>09:00 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type reference">reference</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">claude-code-sprint1-instructions</div>
+          <div class="timeline-value">Comprehensive implementation instructions for Claude Code to execute Sprint 1: Service Registry, Role Manager, and testing foundation using strict TDD methodology.</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/6/2025<br>08:58 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">sprint1-final-plan</div>
+          <div class="timeline-value">Final Sprint 1 plan incorporating all team feedback: 2-week sprint focusing on Service Registry, Role Manager, and comprehensive testing. Team consensus on TDD approach, Jest testing framework, and CI...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="config">
+        <div class="timeline-dot config"></div>
+        <div class="timeline-date">7/6/2025<br>08:58 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type config">config</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">devops-sprint1-review</div>
+          <div class="timeline-value">DevOps requirements for Sprint 1: Need CI/CD pipeline, Docker containerization for testing, automated test runs, and basic monitoring setup. Recommends GitHub Actions with test matrix for Node version...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="standard">
+        <div class="timeline-dot standard"></div>
+        <div class="timeline-date">7/6/2025<br>08:58 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type standard">standard</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">qa-sprint1-review</div>
+          <div class="timeline-value">QA testing standards for Sprint 1: Requires comprehensive error handling tests, service timeout scenarios, concurrent access testing, and performance benchmarking. Emphasizes testing failure modes, no...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="note">
+        <div class="timeline-dot note"></div>
+        <div class="timeline-date">7/6/2025<br>08:57 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type note">note</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">developer-sprint1-review</div>
+          <div class="timeline-value">Developer feedback on Sprint 1: Implementation is feasible within 2 weeks. Strong TDD approach appreciated. Suggests starting with ServiceRegistry as it's most critical, then RoleManager. Recommends J...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/6/2025<br>08:57 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">architect-sprint1-review</div>
+          <div class="timeline-value">Architect review of Sprint 1 plan: Strong technical foundation with proper separation of concerns. Recommends starting with interfaces, adding circuit breaker pattern for service calls, and considerin...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+      <div class="timeline-entry" data-type="decision">
+        <div class="timeline-dot decision"></div>
+        <div class="timeline-date">7/6/2025<br>08:57 PM</div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-type decision">decision</span>
+            <span style="color: #999; font-size: 12px;">Role: No role</span>
+          </div>
+          <div class="timeline-key">sprint-1-core-shaping-objective</div>
+          <div class="timeline-value">Sprint 1 focuses on 'shaping the core as a test' - establishing the foundational architecture, service registry, and basic role management with comprehensive test coverage. This sprint validates our c...</div>
+          <div class="timeline-meta">
+            mpcm-pro
+          </div>
+        </div>
+      </div>
+    
+  </div>
+  
+  <script>
+    function filterTimeline(type) {
+      const buttons = document.querySelectorAll('.filter-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      const entries = document.querySelectorAll('.timeline-entry');
+      entries.forEach(entry => {
+        if (type === 'all' || entry.dataset.type === type) {
+          entry.style.display = 'block';
+        } else {
+          entry.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

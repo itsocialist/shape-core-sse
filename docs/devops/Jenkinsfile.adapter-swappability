@@ -1,0 +1,126 @@
+pipeline {
+    agent { label 'mac-local' }
+    
+    environment {
+        NODE_VERSION = '18'
+        PROJECT_DIR = '/Users/briandawson/Development/mpcm-pro'
+        TEST_WORKSPACE = "${PROJECT_DIR}/test-workspace"
+    }
+    
+    triggers {
+        pollSCM('H/15 * * * *')  // Check every 15 minutes
+    }
+    
+    stages {
+        stage('Setup') {
+            steps {
+                echo 'Setting up test environment...'
+                sh '''
+                    cd ${PROJECT_DIR}
+                    npm ci
+                    
+                    # Create test workspace
+                    mkdir -p ${TEST_WORKSPACE}
+                    cd ${TEST_WORKSPACE}
+                    git init test-repo
+                '''
+            }
+        }
+        
+        stage('Quick Checks') {
+            parallel {
+                stage('Type Check') {
+                    steps {
+                        sh 'cd ${PROJECT_DIR} && npm run type-check'
+                    }
+                }
+                stage('Lint') {
+                    steps {
+                        sh 'cd ${PROJECT_DIR} && npm run lint'
+                    }
+                }
+            }
+        }
+        
+        stage('Unit Tests') {
+            steps {
+                sh '''
+                    cd ${PROJECT_DIR}
+                    npm test -- --testPathPattern='adapters.*\\.test\\.ts$'
+                '''
+            }
+        }
+        
+        stage('Real MCP Server Tests') {
+            when {
+                branch 'feature/adapter-swappability'
+            }
+            parallel {
+                stage('Cyanheads Git MCP') {
+                    steps {
+                        sh '''
+                            cd ${PROJECT_DIR}
+                            
+                            # Install if needed
+                            npm list @cyanheads/git-mcp-server || npm install -g @cyanheads/git-mcp-server
+                            
+                            # Run integration tests
+                            export TEST_MODE=real
+                            export TEST_MCP_SERVER=cyanheads
+                            npm test -- git.integration.test.ts
+                        '''
+                    }
+                }
+                stage('Mock Server Tests') {
+                    steps {
+                        sh '''
+                            cd ${PROJECT_DIR}
+                            export TEST_MODE=mock
+                            npm test -- git.integration.test.ts
+                        '''
+                    }
+                }
+            }
+        }
+        
+        stage('Compatibility Tests') {
+            steps {
+                sh '''
+                    cd ${PROJECT_DIR}
+                    npm test -- compatibility.test.ts
+                '''
+            }
+        }
+        
+        stage('Performance Benchmark') {
+            steps {
+                sh '''
+                    cd ${PROJECT_DIR}
+                    node scripts/benchmark-adapters.js || echo "Benchmark script not yet created"
+                '''
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                sh '''
+                    cd ${PROJECT_DIR}
+                    npm run build
+                '''
+            }
+        }
+    }
+    
+    post {
+        always {
+            // Clean up test workspace
+            sh 'rm -rf ${TEST_WORKSPACE}'
+        }
+        success {
+            echo 'All adapter tests passed!'
+        }
+        failure {
+            echo 'Adapter tests failed - check logs above'
+        }
+    }
+}

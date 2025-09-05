@@ -1,0 +1,12 @@
+# Context Interpretation Tests  
+# Tests Claude's ability to interpret and categorize information
+# Each line is a separate prompt
+
+The API needs to handle 1000 requests per second
+John suggested using GraphQL instead of REST
+We're blocked by the payment gateway integration
+The customer wants the feature by end of month
+Security audit found three critical vulnerabilities
+Database queries are taking too long in production
+We should follow SOLID principles in this refactor
+The new junior developer will start next Monday

@@ -1,0 +1,183 @@
+/**
+ * Integration tests for UnixSocketClient
+ * These tests verify the client works with the actual Rust MPCM Service
+ */
+
+import { UnixSocketClient } from '../../../src/adapters/mpcm-adapter/client';
+import { ServiceRequest, ServiceResponse } from '../../../src/adapters/mpcm-adapter/types';
+import * as fs from 'fs';
+import * as net from 'net';
+
+describe('UnixSocketClient Integration', () => {
+  const socketPath = '/tmp/mpcm-test.sock';
+  let client: UnixSocketClient;
+  let server: net.Server;
+
+  // Create a mock server for testing
+  beforeAll(async () => {
+    // Clean up any existing socket
+    if (fs.existsSync(socketPath)) {
+      fs.unlinkSync(socketPath);
+    }
+
+    // Create a simple echo server for testing
+    server = net.createServer((socket) => {
+      let buffer = '';
+      
+      socket.on('data', (data) => {
+        buffer += data.toString();
+        
+        // Process complete messages (newline delimited)
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+        
+        for (const line of lines) {
+          if (line.trim()) {
+            try {
+              const request: ServiceRequest = JSON.parse(line);
+              
+              // Echo back with a success response
+              const response: ServiceResponse = {
+                id: request.id,
+                result: {
+                  echo: request.params,
+                  method: request.method,
+                  timestamp: new Date().toISOString()
+                }
+              };
+              
+              socket.write(JSON.stringify(response) + '\n');
+            } catch (error) {
+              // Send error response
+              const errorResponse: ServiceResponse = {
+                id: 'error',
+                error: {
+                  code: -32700,
+                  message: 'Parse error'
+                }
+              };
+              socket.write(JSON.stringify(errorResponse) + '\n');
+            }
+          }
+        }
+      });
+    });
+
+    await new Promise<void>((resolve) => {
+      server.listen(socketPath, resolve);
+    });
+  });
+
+  afterAll(async () => {
+    await new Promise<void>((resolve) => {
+      server.close(() => {
+        if (fs.existsSync(socketPath)) {
+          fs.unlinkSync(socketPath);
+        }
+        resolve();
+      });
+    });
+  });
+
+  beforeEach(() => {
+    client = new UnixSocketClient(socketPath);
+  });
+
+  afterEach(async () => {
+    await client.disconnect();
+  });
+
+  describe('Basic Operations', () => {
+    it('should connect and disconnect', async () => {
+      expect(client.isConnected()).toBe(false);
+      
+      await client.connect();
+      expect(client.isConnected()).toBe(true);
+      
+      await client.disconnect();
+      expect(client.isConnected()).toBe(false);
+    });
+
+    it('should send request and receive response', async () => {
+      await client.connect();
+
+      const request: ServiceRequest = {
+        id: 'test-1',
+        method: 'store_context',
+        params: {
+          key: 'test-key',
+          value: 'test-value'
+        }
+      };
+
+      const response = await client.sendRequest(request);
+
+      expect(response.id).toBe('test-1');
+      expect(response.result).toBeDefined();
+      expect(response.result.echo).toEqual(request.params);
+      expect(response.result.method).toBe('store_context');
+    });
+
+    it('should handle multiple concurrent requests', async () => {
+      await client.connect();
+
+      const requests = Array.from({ length: 10 }, (_, i) => ({
+        id: `concurrent-${i}`,
+        method: 'test_method',
+        params: { index: i }
+      }));
+
+      const responses = await Promise.all(
+        requests.map(req => client.sendRequest(req))
+      );
+
+      expect(responses).toHaveLength(10);
+      responses.forEach((response, i) => {
+        expect(response.id).toBe(`concurrent-${i}`);
+        expect(response.result.echo.index).toBe(i);
+      });
+    });
+  });
+
+  describe('Error Handling', () => {
+    it('should throw when not connected', async () => {
+      await expect(client.sendRequest({
+        id: 'no-connection',
+        method: 'test',
+        params: {}
+      })).rejects.toThrow('Client not connected');
+    });
+
+    it('should handle reconnection', async () => {
+      const reconnectClient = new UnixSocketClient(socketPath, {
+        autoReconnect: true,
+        reconnectDelay: 100
+      });
+
+      await reconnectClient.connect();
+      expect(reconnectClient.isConnected()).toBe(true);
+
+      // Force disconnect by destroying the socket
+      // @ts-ignore - accessing private property for testing
+      reconnectClient.socket?.destroy();
+
+      // Wait for reconnection
+      await new Promise(resolve => {
+        reconnectClient.once('reconnected', resolve);
+      });
+
+      expect(reconnectClient.isConnected()).toBe(true);
+      
+      // Should still be able to send requests
+      const response = await reconnectClient.sendRequest({
+        id: 'after-reconnect',
+        method: 'test',
+        params: { message: 'reconnected!' }
+      });
+
+      expect(response.result).toBeDefined();
+      
+      await reconnectClient.disconnect();
+    });
+  });
+});

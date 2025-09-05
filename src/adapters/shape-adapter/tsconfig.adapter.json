@@ -1,0 +1,14 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../dist/adapters/mpcm-adapter",
+    "rootDir": "."
+  },
+  "include": [
+    "./**/*.ts"
+  ],
+  "exclude": [
+    "**/*.test.ts",
+    "__tests__"
+  ]
+}

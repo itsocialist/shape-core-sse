@@ -1,0 +1,12 @@
+# Error Handling and Edge Case Tests
+# Tests how Claude handles errors and edge cases gracefully
+# Each line is a separate prompt
+
+Switch to the coding role
+Show me what the tester found  
+Change to the manager role for project that-doesnt-exist
+I want to see decisions from the future
+Delete everything from last year
+Show me contexts for all projects at once
+What did I do tomorrow?
+Create 100 projects at once

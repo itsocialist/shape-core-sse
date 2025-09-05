@@ -1,0 +1,119 @@
+name: Performance Testing
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      updateBaseline:
+        description: 'Update performance baseline'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  performance-test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build project
+      run: npm run build
+    
+    - name: Run performance tests
+      run: npm run test:performance
+      env:
+        NODE_OPTIONS: --max-old-space-size=4096
+    
+    - name: Upload performance results
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-results-${{ matrix.node-version }}
+        path: performance-results/
+        retention-days: 30
+    
+    - name: Download baseline
+      if: github.event_name == 'pull_request'
+      uses: actions/download-artifact@v3
+      with:
+        name: performance-baseline
+        path: performance-baseline/
+      continue-on-error: true
+    
+    - name: Compare with baseline
+      if: github.event_name == 'pull_request' && success()
+      run: |
+        if [ -f performance-baseline/baseline.json ]; then
+          cp performance-baseline/baseline.json performance-results/baseline.json
+          LATEST=$(ls -t performance-results/performance-*.json | head -1)
+          npx tsx tests/performance/performance-compare.ts "$LATEST" | tee performance-report.md
+        else
+          echo "No baseline found, skipping comparison"
+        fi
+    
+    - name: Comment PR with performance report
+      if: github.event_name == 'pull_request' && success()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          if (fs.existsSync('performance-report.md')) {
+            const report = fs.readFileSync('performance-report.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            });
+          }
+    
+    - name: Update baseline
+      if: (github.ref == 'refs/heads/main' && github.event_name == 'push') || github.event.inputs.updateBaseline == 'true'
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-baseline
+        path: performance-results/baseline.json
+        retention-days: 90
+
+  performance-trend:
+    needs: performance-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Download all performance results
+      uses: actions/download-artifact@v3
+      with:
+        path: all-results/
+    
+    - name: Generate trend report
+      run: |
+        echo "# Performance Trend Report" > trend-report.md
+        echo "Generated at: $(date)" >> trend-report.md
+        echo "" >> trend-report.md
+        # Add trend analysis logic here
+    
+    - name: Upload trend report
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-trend-report
+        path: trend-report.md
+        retention-days: 90

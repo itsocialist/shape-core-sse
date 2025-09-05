@@ -1,0 +1,29 @@
+# Complex Multi-Step Workflow Tests
+# Tests that require multiple tool calls and maintain context
+# Each section is a complete workflow - run all prompts in sequence
+
+## Workflow 1: Complete Project Lifecycle
+I'm starting a new mobile app project called HealthTracker
+The main goal is to help users track their daily medications  
+As the architect, I think we should use React Native
+We'll need push notifications for medication reminders
+I'm ready to hand this off to development
+As a developer, what architecture decisions were made?
+I've implemented the basic reminder system
+Time to test this - switching to QA role
+What features need testing based on the requirements?
+
+## Workflow 2: Debugging Scenario  
+Something is wrong with our authentication system
+Users are reporting they get logged out randomly
+As a developer, I found it happens after 5 minutes of inactivity
+This might be a token expiration issue
+Let me document this for the team
+What other authentication issues have we seen before?
+
+## Workflow 3: Sprint Planning
+Let's plan the next sprint for the HealthTracker project
+Show me all the pending tasks
+What did QA report as issues?
+What features are still in the architect's backlog?
+Create a summary of work for the next two weeks

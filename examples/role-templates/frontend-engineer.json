@@ -1,0 +1,17 @@
+{
+  "id": "frontend-engineer",
+  "name": "Frontend Engineer",
+  "description": "Specializes in user interfaces, user experience, and client-side development",
+  "base_role_id": "developer",
+  "focus_areas": [
+    "ui",
+    "ux",
+    "accessibility",
+    "performance",
+    "responsive-design",
+    "components",
+    "state-management"
+  ],
+  "default_tags": ["frontend", "ui", "ux"],
+  "preferred_context_types": ["code", "decision", "issue", "note"]
+}

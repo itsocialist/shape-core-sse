@@ -1,0 +1,51 @@
+{
+  "version": "0.3.0",
+  "date": "2025-07-02T00:38:57.038Z",
+  "metrics": {
+    "Database Initialization": {
+      "duration": 2.901292000000012,
+      "memory": 36472,
+      "threshold": 1000
+    },
+    "Server Initialization": {
+      "duration": 0.034708000000023276,
+      "memory": 6536,
+      "threshold": 1000
+    },
+    "List Tools": {
+      "duration": 0.23116700000002766,
+      "memory": 10872,
+      "threshold": 1000
+    },
+    "Simple Tool Call": {
+      "duration": 0.6968749999999773,
+      "memory": 20296,
+      "threshold": 1000
+    },
+    "Database Write (10 ops)": {
+      "duration": 2.8837090000000103,
+      "memory": 286456,
+      "threshold": 1000
+    },
+    "Database Read": {
+      "duration": 0.04195900000001984,
+      "memory": 2272,
+      "threshold": 1000
+    },
+    "Context Search": {
+      "duration": 0.42870800000002873,
+      "memory": 88688,
+      "threshold": 1000
+    },
+    "Role Switch": {
+      "duration": 0.7581670000000145,
+      "memory": 31528,
+      "threshold": 1000
+    },
+    "Concurrent Operations (10)": {
+      "duration": 0.5988339999999539,
+      "memory": 135072,
+      "threshold": 1000
+    }
+  }
+}

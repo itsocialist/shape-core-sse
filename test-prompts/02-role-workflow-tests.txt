@@ -1,0 +1,11 @@
+# Role Workflow Natural Language Tests
+# Tests Claude's ability to understand role-based workflows
+# Each line is a separate prompt - wait for response between each
+
+I'm starting to design the architecture for my new e-commerce project
+I've decided to use PostgreSQL and Redis for the backend
+I'm done with the design phase, time to start coding
+What did the architect decide about the database?
+I need to deploy this to AWS next week
+Let me hand this off to QA for testing
+What should the DevOps engineer know about this project?

@@ -1,0 +1,17 @@
+{
+  "id": "ml-engineer",
+  "name": "Machine Learning Engineer",
+  "description": "Develops and deploys machine learning models and AI systems",
+  "base_role_id": "developer",
+  "focus_areas": [
+    "machine-learning",
+    "models",
+    "training",
+    "inference",
+    "data-science",
+    "mlops",
+    "evaluation"
+  ],
+  "default_tags": ["ml", "ai", "model"],
+  "preferred_context_types": ["code", "decision", "config", "reference"]
+}

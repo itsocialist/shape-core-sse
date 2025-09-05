@@ -1,0 +1,9 @@
+{
+  "name": "shape-adapter-build",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --project tsconfig.adapter.json",
+    "test": "jest tests/adapters/shape-adapter/*.test.ts"
+  }
+}

@@ -1,0 +1,79 @@
+# Node modules
+node_modules/
+
+# Build output
+dist/
+*.js
+*.js.map
+*.d.ts
+*.d.ts.map
+
+# Keep TypeScript source files
+!src/**/*.ts
+
+# Keep config and test files
+!jest.config.mjs
+!test-server.mjs
+
+# IDE
+.vscode/
+.idea/
+.claude/
+*.swp
+*.swo
+.DS_Store
+
+# Environment
+.env
+.env.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.backup
+
+# OS files
+Thumbs.db
+
+# Test scripts (not for distribution)
+concurrent-test.js
+debug-tags.js
+diagnose.js
+stress-test.js
+test-search-fix.js
+server-wrapper.js
+
+# Temporary fix scripts
+fix-typescript-errors.sh
+typescript-fixes.txt
+external/git-mcp-server/
+
+# Test workspace
+test-workspace/
+
+# Rust build output
+mpcm-service/target/
+
+# Performance test results (keep baseline)
+performance-results/*.json
+!performance-results/baseline.json
+
+# Scripts we want to keep
+!scripts/*.sh
