@@ -189,6 +189,26 @@ export class TenantManager {
               ]
             }
           };
+        } else if (request.method === 'notifications/initialized') {
+          // Handle initialized notification - no response needed for notifications
+          console.log(`[TenantManager] Client initialized notification received for tenant: ${tenantId}`);
+          return null; // Notifications don't require responses
+        } else if (request.method === 'resources/list') {
+          return {
+            jsonrpc: '2.0',
+            id: request.id,
+            result: {
+              resources: [] // No resources for now
+            }
+          };
+        } else if (request.method === 'prompts/list') {
+          return {
+            jsonrpc: '2.0',
+            id: request.id,
+            result: {
+              prompts: [] // No prompts for now
+            }
+          };
         } else {
           return {
             jsonrpc: '2.0',

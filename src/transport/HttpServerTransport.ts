@@ -360,6 +360,13 @@ export class HttpServerTransport {
         console.log(`[SSE] Public MCP Request - Method: ${mcpRequest.method}, Tenant: ${mcpRequest.tenantId}, Params:`, mcpRequest.params);
 
         const response = await this.requestHandler(mcpRequest);
+        
+        // Handle notifications (null response) - don't send HTTP response for notifications
+        if (response === null) {
+          res.status(204).end(); // No Content for notifications
+          return;
+        }
+        
         res.json(response);
 
       } catch (error) {
@@ -416,6 +423,13 @@ export class HttpServerTransport {
           console.log(`[SSE] MCP Discovery - Method: ${mcpRequest.method}, Tenant: ${mcpRequest.tenantId}`);
           
           const response = await this.requestHandler(mcpRequest);
+          
+          // Handle notifications (null response) - don't send HTTP response for notifications
+          if (response === null) {
+            res.status(204).end(); // No Content for notifications
+            return;
+          }
+          
           return res.json(response);
         }
 
@@ -452,6 +466,12 @@ export class HttpServerTransport {
         console.log(`[SSE] MCP Request - Method: ${mcpRequest.method}, Tenant: ${mcpRequest.tenantId}, Params:`, mcpRequest.params);
 
         const response = await this.requestHandler(mcpRequest);
+        
+        // Handle notifications (null response) - don't send HTTP response for notifications
+        if (response === null) {
+          res.status(204).end(); // No Content for notifications
+          return;
+        }
         
         // Add tenant context to response if needed
         if (authResult.tenantId) {

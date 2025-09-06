@@ -90,6 +90,11 @@ export class MultiTenantMCPServer {
         params: request.params
       });
 
+      // Handle notifications (which return null) - don't send response
+      if (response === null) {
+        return null;
+      }
+
       return response;
 
     } catch (error) {
