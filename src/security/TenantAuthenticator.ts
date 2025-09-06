@@ -54,7 +54,7 @@ export class TenantAuthenticator {
     const keyHash = this.hashApiKey(apiKey);
     
     // Find tenant by API key hash
-    for (const [tenantId, credentials] of this.tenantStore.entries()) {
+    for (const [tenantId, credentials] of Array.from(this.tenantStore.entries())) {
       if (credentials.status !== 'active') {
         continue;
       }
@@ -143,7 +143,7 @@ export class TenantAuthenticator {
   public listTenants(): Array<Omit<TenantCredentials, 'apiKeyHash'>> {
     const tenants: Array<Omit<TenantCredentials, 'apiKeyHash'>> = [];
     
-    for (const credentials of this.tenantStore.values()) {
+    for (const credentials of Array.from(this.tenantStore.values())) {
       const { apiKeyHash, ...info } = credentials;
       tenants.push(info);
     }
@@ -153,7 +153,7 @@ export class TenantAuthenticator {
 
   public getActiveTenantCount(): number {
     let count = 0;
-    for (const credentials of this.tenantStore.values()) {
+    for (const credentials of Array.from(this.tenantStore.values())) {
       if (credentials.status === 'active') {
         count++;
       }

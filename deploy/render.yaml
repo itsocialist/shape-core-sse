@@ -1,0 +1,48 @@
+# Ship APE Core SSE - Render.com Deployment Configuration
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: ship-ape-core-sse
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    region: oregon
+    plan: starter
+    branch: main
+    healthCheckPath: /health
+    numInstances: 1
+    
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SHAPE_SSE_MODE
+        value: "true"
+      - key: PORT
+        value: "3000"
+      - key: SHIP_APE_MASTER_KEY
+        sync: false  # This will be set in Render dashboard
+      - key: CORS_ORIGINS
+        value: "https://claude.ai,https://web.claude.ai"
+      - key: TENANT_DATA_PATH
+        value: "/app/tenant-data"
+      - key: DATABASE_ENCRYPTION
+        value: "false"
+      - key: ENABLE_REQUEST_LOGGING
+        value: "true"
+      - key: LOG_LEVEL
+        value: "info"
+      - key: RAILWAY_STATIC_URL
+        value: "${RENDER_EXTERNAL_URL}"
+
+    # Disk storage for tenant data
+    disk:
+      name: tenant-data
+      mountPath: /app/tenant-data
+      sizeGB: 1
+
+# Deployment instructions:
+# 1. Connect your GitHub repository to Render
+# 2. Import this blueprint file
+# 3. Set SHIP_APE_MASTER_KEY environment variable in Render dashboard
+# 4. Deploy the service

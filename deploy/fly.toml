@@ -1,0 +1,56 @@
+# Ship APE Core SSE - Fly.io Deployment Configuration
+# Deploy with: fly deploy
+
+app = "ship-ape-core-sse"
+primary_region = "sjc"
+kill_signal = "SIGINT"
+kill_timeout = "5s"
+
+[experimental]
+  auto_rollback = true
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  SHAPE_SSE_MODE = "true"
+  PORT = "8080"
+  CORS_ORIGINS = "https://claude.ai,https://web.claude.ai"
+  TENANT_DATA_PATH = "/app/tenant-data"
+  DATABASE_ENCRYPTION = "false"
+  ENABLE_REQUEST_LOGGING = "true"
+  LOG_LEVEL = "info"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [http_service.checks]
+    [http_service.checks.health]
+      grace_period = "30s"
+      interval = "15s"
+      method = "GET"
+      path = "/health"
+      protocol = "http"
+      timeout = "10s"
+      tls_skip_verify = false
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 512
+
+[[mounts]]
+  source = "tenant_data"
+  destination = "/app/tenant-data"
+
+# Volume configuration (run once):
+# fly volumes create tenant_data --region sjc --size 1
+
+# Set secrets:
+# fly secrets set SHIP_APE_MASTER_KEY=your-secure-key-here

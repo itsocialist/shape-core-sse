@@ -1,0 +1,78 @@
+# Ship APE Core SSE - Docker Compose Configuration
+# Supports development and production environments
+
+version: '3.8'
+
+services:
+  # Main SSE server
+  shape-core-sse:
+    build: 
+      context: .
+      target: ${BUILD_TARGET:-production}
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - SHAPE_SSE_MODE=true
+      - PORT=3000
+      - SHIP_APE_MASTER_KEY=${SHIP_APE_MASTER_KEY:-please-change-in-production}
+      - CORS_ORIGINS=${CORS_ORIGINS:-https://claude.ai,https://web.claude.ai}
+      - TENANT_DATA_PATH=/app/tenant-data
+      - DATABASE_ENCRYPTION=${DATABASE_ENCRYPTION:-false}
+    volumes:
+      # Persistent tenant data
+      - tenant-data:/app/tenant-data
+      # Development hot reload (only for dev target)
+      - ${PWD}/src:/app/src:${DEV_VOLUME_MODE:-ro}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/health').then(r => r.json()).then(console.log)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.shipape.service=core-sse"
+      - "com.shipape.version=0.4.0"
+
+  # Nginx reverse proxy (optional, for production)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "${NGINX_PORT:-80}:80"
+      - "${NGINX_HTTPS_PORT:-443}:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - shape-core-sse
+    restart: unless-stopped
+    profiles:
+      - production
+
+  # Redis for session management (optional, future enhancement)
+  redis:
+    image: redis:alpine
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    profiles:
+      - enhanced
+
+volumes:
+  tenant-data:
+    driver: local
+  redis-data:
+    driver: local
+
+# Usage examples:
+# Development:
+#   BUILD_TARGET=development DEV_VOLUME_MODE=rw docker-compose up
+#
+# Production:
+#   docker-compose --profile production up -d
+#
+# With Redis:
+#   docker-compose --profile enhanced up -d

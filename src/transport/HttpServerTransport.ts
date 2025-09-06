@@ -3,7 +3,8 @@
  * Provides HTTP + Server-Sent Events transport for Claude Web/Mobile integration
  */
 
-import express, { Request, Response } from 'express';
+import express from 'express';
+import { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { Server as HttpServer } from 'http';
@@ -332,7 +333,7 @@ export class HttpServerTransport {
   public async stop(): Promise<void> {
     return new Promise((resolve) => {
       // Close all SSE connections
-      for (const connection of this.sseConnections.values()) {
+      for (const connection of Array.from(this.sseConnections.values())) {
         connection.close();
       }
       this.sseConnections.clear();
@@ -349,7 +350,7 @@ export class HttpServerTransport {
   }
 
   public broadcastToTenant(tenantId: string, event: any): void {
-    for (const connection of this.sseConnections.values()) {
+    for (const connection of Array.from(this.sseConnections.values())) {
       if (connection.getTenantId() === tenantId) {
         connection.send(event);
       }
@@ -362,7 +363,7 @@ export class HttpServerTransport {
 
   public getTenantConnections(tenantId: string): number {
     let count = 0;
-    for (const connection of this.sseConnections.values()) {
+    for (const connection of Array.from(this.sseConnections.values())) {
       if (connection.getTenantId() === tenantId) {
         count++;
       }
