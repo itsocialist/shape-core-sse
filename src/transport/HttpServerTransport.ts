@@ -174,15 +174,18 @@ export class HttpServerTransport {
     });
 
     this.app.get('/.well-known/oauth-authorization-server/mcp/public', (req: Request, res: Response) => {
-      // Redirect to main OAuth discovery endpoint
-      res.redirect('/.well-known/oauth-authorization-server');
+      // Public endpoint doesn't support OAuth - return 404
+      res.status(404).json({
+        error: 'not_found',
+        message: 'OAuth not supported for public endpoint'
+      });
     });
 
     this.app.get('/.well-known/oauth-protected-resource/mcp/public', (req: Request, res: Response) => {
-      res.json({
-        resource_server: `https://${req.get('host')}`,
-        authorization_servers: [`https://${req.get('host')}`],
-        scopes_supported: ['mcp']
+      // Public endpoint doesn't need OAuth protection - return 404
+      res.status(404).json({
+        error: 'not_found', 
+        message: 'OAuth not supported for public endpoint'
       });
     });
 
