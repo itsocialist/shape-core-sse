@@ -13,4 +13,4 @@ cmds = [
 ]
 
 [start]
-cmd = "SHAPE_SSE_MODE=true tsx src/index.ts"
+cmd = "tsx src/index.ts"
