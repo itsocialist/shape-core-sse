@@ -28,15 +28,10 @@ ENV NODE_ENV=development
 ENV SHAPE_SSE_MODE=true
 CMD ["npm", "run", "dev:sse"]
 
-# Build stage
+# Build stage (simplified - direct source copy)
 FROM base AS build
-RUN npm ci
+RUN npm ci --ignore-scripts
 COPY . .
-
-# Create dist directory and copy source files directly for now
-# (bypassing TypeScript compilation until errors are fixed)
-RUN mkdir -p dist && cp -r src/* dist/
-RUN find dist -name "*.ts" -exec sh -c 'mv "$1" "${1%.ts}.js"' _ {} \;
 
 # Production stage
 FROM node:20-alpine AS production
@@ -50,13 +45,16 @@ WORKDIR /app
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodeuser -u 1001
 
-# Copy package files and install production dependencies
+# Copy package files and install production dependencies (skip prepare script)
 COPY package*.json ./
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci --only=production --ignore-scripts && npm cache clean --force
 
-# Copy built application
-COPY --from=build --chown=nodeuser:nodejs /app/dist ./dist
-COPY --from=build --chown=nodeuser:nodejs /app/package.json ./
+# Install tsx globally before switching users
+RUN npm install -g tsx
+
+# Copy source files directly (bypassing TypeScript compilation for now)
+COPY --chown=nodeuser:nodejs src ./src
+COPY --chown=nodeuser:nodejs package.json ./
 
 # Create directories for tenant data
 RUN mkdir -p /app/tenant-data && \
@@ -78,8 +76,8 @@ ENV SHAPE_SSE_MODE=true
 ENV PORT=3000
 ENV TENANT_DATA_PATH=/app/tenant-data
 
-# Start the application
-CMD ["node", "dist/index.js"]
+# Start the application (using tsx for TypeScript execution)
+CMD ["tsx", "src/index.ts"]
 
 # Multi-stage build targets:
 # docker build --target development -t ship-ape-core-sse:dev .

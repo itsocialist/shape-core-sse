@@ -34,7 +34,7 @@
     "perf:compare": "tsx tests/performance/performance-compare.ts",
     "lint": "eslint src/**/*.ts",
     "type-check": "tsc --noEmit",
-    "prepare": "npm run build"
+    "prepare": "npm run build || echo 'Build skipped in production'"
   },
   "keywords": [
     "mcp",

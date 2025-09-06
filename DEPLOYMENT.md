@@ -64,7 +64,7 @@ railway variables set SHIP_APE_MASTER_KEY=your-secure-key
 ### Fly.io
 
 ```bash
-# Install flyctl and login
+# Install Fly CLI and login
 fly auth login
 
 # Deploy
