@@ -644,47 +644,96 @@ export class MCPMProServer {
 // Main entry point
 async function main() {
   try {
-    // Determine mode based on command line args or environment
-    const isProMode = process.argv.includes('--pro') || 
-                     process.env.SHAPE_PRO_MODE === 'true' ||
-                     !process.env.SHAPE_BASIC_MODE; // Default to Pro mode
+    // Check for SSE mode
+    const isSSEMode = process.argv.includes('--sse') || 
+                     process.env.SHAPE_SSE_MODE === 'true';
     
-    // Choose database path based on mode
-    let dbPath: string;
-    if (isProMode) {
-      const defaultDir = join(homedir(), '.shape-core');
-      if (!existsSync(defaultDir)) {
-        mkdirSync(defaultDir, { recursive: true });
-      }
-      dbPath = process.env.SHAPE_PRO_DB_PATH || join(defaultDir, 'shape-core.db');
+    if (isSSEMode) {
+      // Start SSE multi-tenant server
+      await startSSEServer();
     } else {
-      // Basic mode uses original MCP database path
-      dbPath = process.env.MCP_CONTEXT_DB_PATH || join(homedir(), '.mcp-context-memory.db');
+      // Start traditional stdio server
+      await startStdioServer();
     }
-    
-    const db = await DatabaseManager.create(dbPath);
-    
-    // Log startup information
-    if (isProMode) {
-      console.error('📦 Ship APE Core - Universal MCP Orchestration Platform');
-      console.error('🔧 Mode: Professional (Full orchestration enabled)');
-    } else {
-      console.error('📝 MCP Context Memory Server');
-      console.error('🔧 Mode: Basic (Core features only)');
-    }
-    console.error(`💾 Database: ${dbPath}`);
-    
-    // Check migration status
-    const migrationStatus = await db.getMigrationStatus();
-    console.error(`📊 Schema version: ${migrationStatus.currentVersion}`);
-    
-    // Create and run server
-    const server = new MCPMProServer(db, isProMode);
-    await server.run();
   } catch (error) {
     console.error('Failed to start server:', error);
     process.exit(1);
   }
+}
+
+async function startSSEServer() {
+  const { MultiTenantMCPServer } = await import('./server/MultiTenantMCPServer.js');
+  
+  const config = {
+    mode: 'sse' as const,
+    httpConfig: {
+      port: parseInt(process.env.PORT || '3000'),
+      corsOrigins: process.env.CORS_ORIGINS ? 
+        process.env.CORS_ORIGINS.split(',') : 
+        ['https://claude.ai', 'http://localhost:3000'],
+      masterKey: process.env.SHIP_APE_MASTER_KEY || 'dev-master-key-change-in-production'
+    },
+    tenantDataPath: process.env.TENANT_DATA_PATH || join(process.cwd(), 'tenant-data')
+  };
+
+  console.error('🚀 Ship APE Core SSE - Multi-Tenant MCP Server v0.4.0');
+  console.error('🌐 Transport: HTTP + Server-Sent Events');
+  console.error(`📡 Port: ${config.httpConfig.port}`);
+  console.error(`📁 Tenant Data: ${config.tenantDataPath}`);
+  
+  const server = new MultiTenantMCPServer(config);
+  await server.start();
+
+  // Graceful shutdown handling
+  const shutdown = async () => {
+    console.error('\n🛑 Shutting down SSE server...');
+    await server.stop();
+    process.exit(0);
+  };
+
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
+}
+
+async function startStdioServer() {
+  // Determine mode based on command line args or environment
+  const isProMode = process.argv.includes('--pro') || 
+                   process.env.SHAPE_PRO_MODE === 'true' ||
+                   !process.env.SHAPE_BASIC_MODE; // Default to Pro mode
+  
+  // Choose database path based on mode
+  let dbPath: string;
+  if (isProMode) {
+    const defaultDir = join(homedir(), '.shape-core');
+    if (!existsSync(defaultDir)) {
+      mkdirSync(defaultDir, { recursive: true });
+    }
+    dbPath = process.env.SHAPE_PRO_DB_PATH || join(defaultDir, 'shape-core.db');
+  } else {
+    // Basic mode uses original MCP database path
+    dbPath = process.env.MCP_CONTEXT_DB_PATH || join(homedir(), '.mcp-context-memory.db');
+  }
+  
+  const db = await DatabaseManager.create(dbPath);
+  
+  // Log startup information
+  if (isProMode) {
+    console.error('📦 Ship APE Core - Universal MCP Orchestration Platform');
+    console.error('🔧 Mode: Professional (Full orchestration enabled)');
+  } else {
+    console.error('📝 MCP Context Memory Server');
+    console.error('🔧 Mode: Basic (Core features only)');
+  }
+  console.error(`💾 Database: ${dbPath}`);
+  console.error('🖥️  Transport: Standard I/O (Claude Desktop)');
+  
+  // Check migration status
+  const migrationStatus = await db.getMigrationStatus();
+  console.error(`📊 Schema version: ${migrationStatus.currentVersion}`);
+  
+  // Create and run server
+  const server = new MCPMProServer(db, isProMode);
+  await server.run();
 }
 
 // Run the server

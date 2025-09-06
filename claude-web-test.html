@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ship APE Core SSE - Claude Web Test Client</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        input, select, textarea, button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        button:hover {
+            background: #5a6fd8;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .results {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .info { color: #007bff; }
+        .sse-event {
+            margin: 5px 0;
+            padding: 8px;
+            background: #e7f3ff;
+            border-left: 3px solid #007bff;
+            border-radius: 3px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Ship APE Core SSE</h1>
+        <p>Claude Web Compatibility Test Client</p>
+        <p>Testing HTTP/SSE MCP Transport v0.4.0</p>
+    </div>
+
+    <div class="grid">
+        <div class="panel">
+            <h2>🔧 Configuration</h2>
+            <div class="form-group">
+                <label for="apiUrl">API Base URL:</label>
+                <input type="text" id="apiUrl" value="http://localhost:3001">
+            </div>
+            <div class="form-group">
+                <label for="apiKey">API Key:</label>
+                <input type="text" id="apiKey" value="dev-key-12345">
+            </div>
+            <div class="form-group">
+                <label for="sessionId">SSE Session ID:</label>
+                <input type="text" id="sessionId" value="web-test-session">
+            </div>
+            <button onclick="testConnection()">🔍 Test Connection</button>
+        </div>
+
+        <div class="panel">
+            <h2>🎯 MCP Tools</h2>
+            <div class="form-group">
+                <label for="tool">Select Tool:</label>
+                <select id="tool" onchange="updateToolForm()">
+                    <option value="">-- Select Tool --</option>
+                    <option value="store_context">Store Context</option>
+                    <option value="search_context">Search Context</option>
+                    <option value="list_projects">List Projects</option>
+                    <option value="switch_role">Switch Role</option>
+                    <option value="get_active_role">Get Active Role</option>
+                </select>
+            </div>
+            <div id="toolForm"></div>
+            <button onclick="callTool()" id="callToolBtn" disabled>🔧 Call Tool</button>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>📡 Server-Sent Events</h2>
+        <button onclick="connectSSE()" id="sseBtn">📻 Connect SSE</button>
+        <button onclick="disconnectSSE()" id="disconnectBtn" disabled>🛑 Disconnect</button>
+        <div id="sseResults" class="results" style="margin-top: 15px; max-height: 300px;"></div>
+    </div>
+
+    <div class="panel">
+        <h2>📋 Results</h2>
+        <div id="results" class="results"></div>
+        <button onclick="clearResults()">🗑️ Clear Results</button>
+    </div>
+
+    <script>
+        let eventSource = null;
+        
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type;
+            results.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            results.scrollTop = results.scrollHeight;
+        }
+
+        function logSSE(message) {
+            const sseResults = document.getElementById('sseResults');
+            const timestamp = new Date().toLocaleTimeString();
+            sseResults.innerHTML += `<div class="sse-event">[${timestamp}] ${message}</div>`;
+            sseResults.scrollTop = sseResults.scrollHeight;
+        }
+
+        async function testConnection() {
+            const apiUrl = document.getElementById('apiUrl').value;
+            
+            try {
+                log('🔍 Testing connection...');
+                
+                // Test health endpoint
+                const healthResponse = await fetch(`${apiUrl}/health`);
+                const health = await healthResponse.json();
+                log(`✅ Health check: ${JSON.stringify(health)}`, 'success');
+                
+                // Test MCP tools list
+                const toolsResponse = await fetch(`${apiUrl}/mcp`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${document.getElementById('apiKey').value}`
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        id: Date.now(),
+                        method: 'tools/list',
+                        params: {}
+                    })
+                });
+                
+                const toolsData = await toolsResponse.json();
+                if (toolsData.error) {
+                    log(`❌ Tools list error: ${toolsData.error.message}`, 'error');
+                } else {
+                    log(`✅ Available tools: ${toolsData.result.tools.length} found`, 'success');
+                    populateToolSelect(toolsData.result.tools);
+                }
+                
+            } catch (error) {
+                log(`❌ Connection failed: ${error.message}`, 'error');
+            }
+        }
+
+        function populateToolSelect(tools) {
+            const select = document.getElementById('tool');
+            select.innerHTML = '<option value="">-- Select Tool --</option>';
+            tools.forEach(tool => {
+                select.innerHTML += `<option value="${tool.name}">${tool.name} - ${tool.description}</option>`;
+            });
+        }
+
+        function updateToolForm() {
+            const tool = document.getElementById('tool').value;
+            const form = document.getElementById('toolForm');
+            const button = document.getElementById('callToolBtn');
+            
+            if (!tool) {
+                form.innerHTML = '';
+                button.disabled = true;
+                return;
+            }
+            
+            button.disabled = false;
+            
+            switch (tool) {
+                case 'store_context':
+                    form.innerHTML = `
+                        <div class="form-group">
+                            <label>Project:</label>
+                            <input type="text" id="project" value="claude-web-test" placeholder="Project name">
+                        </div>
+                        <div class="form-group">
+                            <label>Context:</label>
+                            <textarea id="context" placeholder="Context to store">Testing Ship APE integration with Claude Web browser client</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Tags (comma-separated):</label>
+                            <input type="text" id="tags" value="claude-web,browser,testing" placeholder="tag1,tag2,tag3">
+                        </div>
+                    `;
+                    break;
+                case 'search_context':
+                    form.innerHTML = `
+                        <div class="form-group">
+                            <label>Query:</label>
+                            <input type="text" id="query" value="claude web" placeholder="Search query">
+                        </div>
+                        <div class="form-group">
+                            <label>Project (optional):</label>
+                            <input type="text" id="project" placeholder="Project filter">
+                        </div>
+                    `;
+                    break;
+                case 'switch_role':
+                    form.innerHTML = `
+                        <div class="form-group">
+                            <label>Role:</label>
+                            <select id="role">
+                                <option value="architect">Architect</option>
+                                <option value="developer">Developer</option>
+                                <option value="devops">DevOps</option>
+                                <option value="qa">QA</option>
+                                <option value="product-manager">Product Manager</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Project:</label>
+                            <input type="text" id="project" value="claude-web-test" placeholder="Project context">
+                        </div>
+                    `;
+                    break;
+                case 'get_active_role':
+                    form.innerHTML = `
+                        <div class="form-group">
+                            <label>Project (optional):</label>
+                            <input type="text" id="project" value="claude-web-test" placeholder="Project context">
+                        </div>
+                    `;
+                    break;
+                default:
+                    form.innerHTML = '<p>No additional parameters required.</p>';
+            }
+        }
+
+        async function callTool() {
+            const apiUrl = document.getElementById('apiUrl').value;
+            const apiKey = document.getElementById('apiKey').value;
+            const tool = document.getElementById('tool').value;
+            
+            if (!tool) return;
+            
+            try {
+                log(`🔧 Calling tool: ${tool}`);
+                
+                let args = {};
+                
+                // Collect form data based on tool
+                const project = document.getElementById('project')?.value;
+                const context = document.getElementById('context')?.value;
+                const tags = document.getElementById('tags')?.value;
+                const query = document.getElementById('query')?.value;
+                const role = document.getElementById('role')?.value;
+                
+                if (project) args.project = project;
+                if (context) args.context = context;
+                if (tags) args.tags = tags.split(',').map(t => t.trim());
+                if (query) args.query = query;
+                if (role) args.role = role;
+                
+                const response = await fetch(`${apiUrl}/mcp`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        id: Date.now(),
+                        method: 'tools/call',
+                        params: {
+                            name: tool,
+                            arguments: args
+                        }
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.error) {
+                    log(`❌ Tool error: ${data.error.message}`, 'error');
+                } else {
+                    log(`✅ Tool result: ${data.result.content[0].text}`, 'success');
+                }
+                
+            } catch (error) {
+                log(`❌ Tool call failed: ${error.message}`, 'error');
+            }
+        }
+
+        function connectSSE() {
+            const apiUrl = document.getElementById('apiUrl').value;
+            const apiKey = document.getElementById('apiKey').value;
+            const sessionId = document.getElementById('sessionId').value;
+            
+            if (eventSource) {
+                eventSource.close();
+            }
+            
+            log('📡 Connecting to SSE...');
+            
+            const sseUrl = `${apiUrl}/mcp/sse/${sessionId}`;
+            eventSource = new EventSource(sseUrl);
+            
+            // Note: EventSource doesn't support custom headers, so authentication 
+            // would need to be handled via URL params in a real implementation
+            // For testing, we'll connect without auth and expect 401
+            
+            eventSource.onopen = () => {
+                log('✅ SSE connection opened', 'success');
+                document.getElementById('sseBtn').disabled = true;
+                document.getElementById('disconnectBtn').disabled = false;
+            };
+            
+            eventSource.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    logSSE(`📨 ${data.type}: ${JSON.stringify(data.data, null, 2)}`);
+                } catch (e) {
+                    logSSE(`📨 Raw: ${event.data}`);
+                }
+            };
+            
+            eventSource.onerror = (error) => {
+                log('❌ SSE connection error', 'error');
+                logSSE('❌ Connection error or closed');
+                document.getElementById('sseBtn').disabled = false;
+                document.getElementById('disconnectBtn').disabled = true;
+            };
+        }
+
+        function disconnectSSE() {
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+                log('🛑 SSE connection closed');
+                logSSE('🛑 Connection closed by user');
+                document.getElementById('sseBtn').disabled = false;
+                document.getElementById('disconnectBtn').disabled = true;
+            }
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('sseResults').innerHTML = '';
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            log('🚀 Ship APE Core SSE Test Client loaded');
+            log('💡 Click "Test Connection" to verify the server is running');
+        });
+    </script>
+</body>
+</html>
