@@ -158,21 +158,7 @@ export class HttpServerTransport {
       });
     });
 
-    // OAuth discovery endpoints
-    this.app.get('/.well-known/oauth-authorization-server', (req: Request, res: Response) => {
-      res.json({
-        issuer: `https://${req.get('host')}`,
-        authorization_endpoint: `https://${req.get('host')}/oauth/authorize`,
-        token_endpoint: `https://${req.get('host')}/oauth/token`,
-        registration_endpoint: `https://${req.get('host')}/register`,
-        scopes_supported: ['mcp'],
-        response_types_supported: ['code'],
-        grant_types_supported: ['authorization_code', 'client_credentials'],
-        token_endpoint_auth_methods_supported: ['client_secret_basic', 'client_secret_post'],
-        code_challenge_methods_supported: ['S256', 'plain']
-      });
-    });
-
+    // OAuth discovery endpoints - specific routes MUST come before general ones
     this.app.get('/.well-known/oauth-authorization-server/mcp/public', (req: Request, res: Response) => {
       // Public endpoint doesn't support OAuth - return 404
       res.status(404).json({
@@ -186,6 +172,20 @@ export class HttpServerTransport {
       res.status(404).json({
         error: 'not_found', 
         message: 'OAuth not supported for public endpoint'
+      });
+    });
+
+    this.app.get('/.well-known/oauth-authorization-server', (req: Request, res: Response) => {
+      res.json({
+        issuer: `https://${req.get('host')}`,
+        authorization_endpoint: `https://${req.get('host')}/oauth/authorize`,
+        token_endpoint: `https://${req.get('host')}/oauth/token`,
+        registration_endpoint: `https://${req.get('host')}/register`,
+        scopes_supported: ['mcp'],
+        response_types_supported: ['code'],
+        grant_types_supported: ['authorization_code', 'client_credentials'],
+        token_endpoint_auth_methods_supported: ['client_secret_basic', 'client_secret_post'],
+        code_challenge_methods_supported: ['S256', 'plain']
       });
     });
 
