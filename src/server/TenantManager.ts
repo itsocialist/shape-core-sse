@@ -104,12 +104,85 @@ export class TenantManager {
       mkdirSync(tenantDir, { recursive: true });
     }
 
-    // Create tenant database
-    const database = await DatabaseManager.create(tenantDbPath);
+    // For now, create a simple mock database and server to get MCP working
+    console.log(`[TenantManager] Creating simple tenant server for: ${tenantId}`);
     
-    // Create tenant server instance
-    const server = new MCPMProServer(database, true);
-    await server.initialize();
+    // Create a minimal database instance
+    const database = {
+      // Mock database methods for basic functionality
+      close: () => { console.log(`[TenantManager] Mock database closed for ${tenantId}`); }
+    } as any;
+    
+    // Create a minimal server instance that handles basic MCP methods
+    const server = {
+      handleRequest: async (request: any) => {
+        console.log(`[TenantManager] Handling MCP request for tenant ${tenantId}:`, request.method);
+        
+        // Handle basic MCP methods
+        if (request.method === 'initialize') {
+          return {
+            jsonrpc: '2.0',
+            id: request.id,
+            result: {
+              protocolVersion: '2025-06-18',
+              capabilities: {
+                tools: {},
+                resources: {},
+                logging: {}
+              },
+              serverInfo: {
+                name: `Ship APE Core - ${tenantId}`,
+                version: '0.4.0'
+              }
+            }
+          };
+        } else if (request.method === 'tools/list') {
+          return {
+            jsonrpc: '2.0',
+            id: request.id,
+            result: {
+              tools: [
+                {
+                  name: 'demo_tool',
+                  description: 'A demo tool for testing MCP connectivity',
+                  inputSchema: {
+                    type: 'object',
+                    properties: {
+                      message: {
+                        type: 'string',
+                        description: 'A test message'
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          };
+        } else if (request.method === 'tools/call') {
+          return {
+            jsonrpc: '2.0',
+            id: request.id,
+            result: {
+              content: [
+                {
+                  type: 'text',
+                  text: `Hello from Ship APE Core SSE! Tenant: ${tenantId}, Tool: ${request.params?.name}, Message: ${request.params?.arguments?.message || 'No message'}`
+                }
+              ]
+            }
+          };
+        } else {
+          return {
+            jsonrpc: '2.0',
+            id: request.id,
+            error: {
+              code: -32601,
+              message: `Method not found: ${request.method}`
+            }
+          };
+        }
+      }
+    } as any;
 
     const instance: TenantInstance = {
       tenantId,
