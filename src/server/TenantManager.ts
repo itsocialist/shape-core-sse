@@ -71,14 +71,20 @@ export class TenantManager {
       return tenantInstance.server;
     }
 
-    // Verify tenant exists in auth system
-    console.log(`[TenantManager] Looking up tenant info for: ${tenantId}`);
-    const tenantInfo = this.authenticator.getTenantInfo(tenantId);
-    if (!tenantInfo || tenantInfo.status !== 'active') {
-      console.warn(`[TenantManager] Tenant ${tenantId} not found or inactive. Info:`, tenantInfo);
-      return null;
+    // Handle demo tenant automatically for public endpoint
+    if (tenantId === 'demo-public-tenant') {
+      console.log(`[TenantManager] Auto-creating demo tenant for public access`);
+      // Demo tenant is always considered active for public endpoint
+    } else {
+      // Verify tenant exists in auth system for regular tenants
+      console.log(`[TenantManager] Looking up tenant info for: ${tenantId}`);
+      const tenantInfo = this.authenticator.getTenantInfo(tenantId);
+      if (!tenantInfo || tenantInfo.status !== 'active') {
+        console.warn(`[TenantManager] Tenant ${tenantId} not found or inactive. Info:`, tenantInfo);
+        return null;
+      }
+      console.log(`[TenantManager] Tenant ${tenantId} found and active`);
     }
-    console.log(`[TenantManager] Tenant ${tenantId} found and active`);
 
     // Create new tenant instance
     try {
