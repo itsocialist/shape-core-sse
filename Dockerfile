@@ -36,8 +36,14 @@ COPY . .
 # Production stage
 FROM node:20-alpine AS production
 
-# Install runtime dependencies
-RUN apk add --no-cache sqlite
+# Install build dependencies and runtime dependencies
+RUN apk add --no-cache \
+    sqlite \
+    python3 \
+    make \
+    g++ \
+    gcc \
+    libc-dev
 
 WORKDIR /app
 
@@ -45,9 +51,12 @@ WORKDIR /app
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodeuser -u 1001
 
-# Copy package files and install production dependencies (skip prepare script)
+# Copy package files and install production dependencies
 COPY package*.json ./
-RUN npm ci --only=production --ignore-scripts && npm cache clean --force
+RUN npm ci --only=production && npm cache clean --force
+
+# Rebuild better-sqlite3 for Alpine Linux
+RUN npm rebuild better-sqlite3
 
 # Install tsx globally before switching users
 RUN npm install -g tsx
