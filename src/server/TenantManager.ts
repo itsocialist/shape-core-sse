@@ -72,15 +72,19 @@ export class TenantManager {
     }
 
     // Verify tenant exists in auth system
+    console.log(`[TenantManager] Looking up tenant info for: ${tenantId}`);
     const tenantInfo = this.authenticator.getTenantInfo(tenantId);
     if (!tenantInfo || tenantInfo.status !== 'active') {
-      console.warn(`[TenantManager] Tenant ${tenantId} not found or inactive`);
+      console.warn(`[TenantManager] Tenant ${tenantId} not found or inactive. Info:`, tenantInfo);
       return null;
     }
+    console.log(`[TenantManager] Tenant ${tenantId} found and active`);
 
     // Create new tenant instance
     try {
+      console.log(`[TenantManager] Creating tenant instance for: ${tenantId}`);
       tenantInstance = await this.createTenantInstance(tenantId);
+      console.log(`[TenantManager] Successfully created tenant instance for: ${tenantId}`);
       return tenantInstance.server;
     } catch (error) {
       console.error(`[TenantManager] Failed to create instance for tenant ${tenantId}:`, error);
