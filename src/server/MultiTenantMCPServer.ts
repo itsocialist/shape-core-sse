@@ -42,6 +42,10 @@ export class MultiTenantMCPServer {
 
       this.httpTransport = new HttpServerTransport(this.config.httpConfig);
       this.httpTransport.setRequestHandler(this.handleMCPRequest.bind(this));
+      this.httpTransport.setTenantCreationHandler(this.tenantManager.createTenant.bind(this.tenantManager));
+      this.httpTransport.setTenantDeletionHandler(this.tenantManager.deleteTenant.bind(this.tenantManager));
+      this.httpTransport.setTenantListHandler(this.tenantManager.listTenants.bind(this.tenantManager));
+      this.httpTransport.setAuthenticationHandler(this.tenantManager.authenticate.bind(this.tenantManager));
     }
 
     // Setup stdio transport if enabled (default for dual mode)

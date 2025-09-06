@@ -39,12 +39,32 @@ export interface MCPRequestHandler {
   (request: MCPRequest): Promise<MCPResponse>;
 }
 
+export interface TenantCreationHandler {
+  (options: { tenantId?: string; permissions?: string[] }): Promise<{ tenantId: string; apiKey: string }>;
+}
+
+export interface TenantDeletionHandler {
+  (tenantId: string): Promise<void>;
+}
+
+export interface TenantListHandler {
+  (): any[];
+}
+
+export interface AuthenticationHandler {
+  (apiKey: string): Promise<{ tenantId: string; permissions?: string[] }>;
+}
+
 export class HttpServerTransport {
   private app: express.Application;
   private server?: HttpServer;
   private sseConnections = new Map<string, SSEConnection>();
   private authenticator: TenantAuthenticator;
   private requestHandler?: MCPRequestHandler;
+  private tenantCreationHandler?: TenantCreationHandler;
+  private tenantDeletionHandler?: TenantDeletionHandler;
+  private tenantListHandler?: TenantListHandler;
+  private authenticationHandler?: AuthenticationHandler;
 
   constructor(private config: HttpTransportConfig) {
     this.app = express();
@@ -232,7 +252,14 @@ export class HttpServerTransport {
 
         const { tenantId, permissions } = req.body;
         
-        const result = await this.authenticator.createTenant({
+        if (!this.tenantCreationHandler) {
+          return res.status(500).json({
+            error: 'Tenant creation not configured',
+            message: 'Tenant creation handler not available'
+          });
+        }
+        
+        const result = await this.tenantCreationHandler({
           tenantId,
           permissions: permissions || ['read', 'write']
         });
@@ -292,7 +319,7 @@ export class HttpServerTransport {
           });
         }
 
-        const tenants = this.authenticator.listTenants();
+        const tenants = this.tenantListHandler ? this.tenantListHandler() : this.authenticator.listTenants();
         res.json({
           success: true,
           tenants,
@@ -347,7 +374,12 @@ export class HttpServerTransport {
         }
 
         const { tenantId } = req.params;
-        await this.authenticator.deleteTenant(tenantId);
+        
+        if (this.tenantDeletionHandler) {
+          await this.tenantDeletionHandler(tenantId);
+        } else {
+          await this.authenticator.deleteTenant(tenantId);
+        }
         
         res.json({
           success: true,
@@ -396,11 +428,20 @@ export class HttpServerTransport {
     const token = authHeader.slice(7); // Remove 'Bearer ' prefix
     
     try {
-      const result = await this.authenticator.authenticate(token);
-      return {
-        success: true,
-        tenantId: result.tenantId
-      };
+      // Use custom authentication handler if available, otherwise fallback to local authenticator
+      if (this.authenticationHandler) {
+        const result = await this.authenticationHandler(token);
+        return {
+          success: true,
+          tenantId: result.tenantId
+        };
+      } else {
+        const result = await this.authenticator.authenticate(token);
+        return {
+          success: true,
+          tenantId: result.tenantId
+        };
+      }
     } catch (error) {
       return {
         success: false,
@@ -456,6 +497,22 @@ export class HttpServerTransport {
 
   public setRequestHandler(handler: MCPRequestHandler): void {
     this.requestHandler = handler;
+  }
+
+  public setTenantCreationHandler(handler: TenantCreationHandler): void {
+    this.tenantCreationHandler = handler;
+  }
+
+  public setTenantDeletionHandler(handler: TenantDeletionHandler): void {
+    this.tenantDeletionHandler = handler;
+  }
+
+  public setTenantListHandler(handler: TenantListHandler): void {
+    this.tenantListHandler = handler;
+  }
+
+  public setAuthenticationHandler(handler: AuthenticationHandler): void {
+    this.authenticationHandler = handler;
   }
 
   public async start(): Promise<void> {

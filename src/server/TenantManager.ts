@@ -211,6 +211,10 @@ export class TenantManager {
     return this.tenants.size;
   }
 
+  public async authenticate(apiKey: string): Promise<{ tenantId: string; permissions?: string[] }> {
+    return await this.authenticator.authenticate(apiKey);
+  }
+
   public getTenantStats(tenantId: string): {
     instanceActive: boolean;
     lastUsed?: Date;
