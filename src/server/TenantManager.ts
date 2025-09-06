@@ -130,14 +130,22 @@ export class TenantManager {
             jsonrpc: '2.0',
             id: request.id,
             result: {
-              protocolVersion: '2025-06-18',
+              protocolVersion: '2024-11-05', // Try older protocol version for Claude Desktop
               capabilities: {
-                tools: {},
-                resources: {},
+                tools: {
+                  listChanged: true
+                },
+                resources: {
+                  subscribe: true,
+                  listChanged: true  
+                },
+                prompts: {
+                  listChanged: true
+                },
                 logging: {}
               },
               serverInfo: {
-                name: `Ship APE Core - ${tenantId}`,
+                name: `Ship APE Core SSE`,
                 version: '0.4.0'
               }
             }

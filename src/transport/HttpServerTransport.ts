@@ -79,12 +79,27 @@ export class HttpServerTransport {
       crossOriginResourcePolicy: { policy: 'cross-origin' }
     }));
 
-    // CORS configuration
+    // CORS configuration with additional headers for MCP
     this.app.use(cors({
       origin: this.config.corsOrigins,
       credentials: true,
-      methods: ['GET', 'POST', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization']
+      methods: ['GET', 'POST', 'OPTIONS', 'HEAD'],
+      allowedHeaders: [
+        'Content-Type', 
+        'Authorization', 
+        'X-Master-Key',
+        'X-API-Key',
+        'anthropic-beta',
+        'User-Agent',
+        'Accept',
+        'Accept-Language',
+        'Accept-Encoding'
+      ],
+      exposedHeaders: [
+        'X-RateLimit-Limit',
+        'X-RateLimit-Remaining',
+        'X-RateLimit-Reset'
+      ]
     }));
 
     // Body parsing
@@ -106,6 +121,68 @@ export class HttpServerTransport {
         timestamp: new Date().toISOString(),
         version: '0.4.0',
         transport: 'http/sse'
+      });
+    });
+
+    // Dynamic Client Registration endpoint for OAuth discovery
+    this.app.post('/register', async (req: Request, res: Response) => {
+      const { client_name, redirect_uris, scope, response_types, grant_types } = req.body;
+      
+      // Generate a client ID for dynamic registration
+      const clientId = `client_${Math.random().toString(36).substr(2, 16)}`;
+      const clientSecret = `secret_${Math.random().toString(36).substr(2, 32)}`;
+      
+      // Store client for later use (in production, use database)
+      (this as any).registeredClients = (this as any).registeredClients || new Map();
+      (this as any).registeredClients.set(clientId, {
+        client_id: clientId,
+        client_secret: clientSecret,
+        client_name: client_name || 'Claude Client',
+        redirect_uris: redirect_uris || ['https://claude.ai/api/mcp/auth_callback'],
+        scope: scope || 'mcp',
+        response_types: response_types || ['code'],
+        grant_types: grant_types || ['authorization_code'],
+        registered_at: Date.now()
+      });
+
+      res.json({
+        client_id: clientId,
+        client_secret: clientSecret,
+        client_name: client_name || 'Claude Client',
+        redirect_uris: redirect_uris || ['https://claude.ai/api/mcp/auth_callback'],
+        scope: scope || 'mcp',
+        response_types: response_types || ['code'],
+        grant_types: grant_types || ['authorization_code'],
+        client_id_issued_at: Math.floor(Date.now() / 1000),
+        client_secret_expires_at: 0 // Never expires
+      });
+    });
+
+    // OAuth discovery endpoints
+    this.app.get('/.well-known/oauth-authorization-server', (req: Request, res: Response) => {
+      res.json({
+        issuer: `https://${req.get('host')}`,
+        authorization_endpoint: `https://${req.get('host')}/oauth/authorize`,
+        token_endpoint: `https://${req.get('host')}/oauth/token`,
+        registration_endpoint: `https://${req.get('host')}/register`,
+        scopes_supported: ['mcp'],
+        response_types_supported: ['code'],
+        grant_types_supported: ['authorization_code', 'client_credentials'],
+        token_endpoint_auth_methods_supported: ['client_secret_basic', 'client_secret_post'],
+        code_challenge_methods_supported: ['S256', 'plain']
+      });
+    });
+
+    this.app.get('/.well-known/oauth-authorization-server/mcp/public', (req: Request, res: Response) => {
+      // Redirect to main OAuth discovery endpoint
+      res.redirect('/.well-known/oauth-authorization-server');
+    });
+
+    this.app.get('/.well-known/oauth-protected-resource/mcp/public', (req: Request, res: Response) => {
+      res.json({
+        resource_server: `https://${req.get('host')}`,
+        authorization_servers: [`https://${req.get('host')}`],
+        scopes_supported: ['mcp']
       });
     });
 
