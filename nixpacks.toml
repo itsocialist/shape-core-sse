@@ -9,12 +9,8 @@ cmds = [
 
 [phases.build]
 cmds = [
-  "echo 'Using tsx runtime, skipping TypeScript build'"
+  "echo 'Skipping TypeScript build - using tsx runtime'"
 ]
 
 [start]
-cmd = "npm run start:sse:tsx"
-
-[variables]
-NODE_ENV = "production"
-SHAPE_SSE_MODE = "true"
+cmd = "SHAPE_SSE_MODE=true tsx src/index.ts"
