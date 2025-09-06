@@ -376,21 +376,6 @@ export class HttpServerTransport {
     // MCP tool execution endpoint (authenticated)
     this.app.post('/mcp', async (req: Request, res: Response) => {
       try {
-        // Authenticate tenant
-        const authResult = await this.authenticateTenant(req);
-        if (!authResult.success) {
-          return res.status(401).json({
-            jsonrpc: '2.0',
-            id: req.body.id,
-            error: {
-              code: -32001,
-              message: 'Authentication failed',
-              data: { reason: authResult.error }
-            }
-          });
-        }
-
-        // Validate MCP request format
         const mcpRequest = this.validateMCPRequest(req.body);
         if (!mcpRequest) {
           return res.status(400).json({
@@ -400,6 +385,43 @@ export class HttpServerTransport {
               code: -32600,
               message: 'Invalid Request',
               data: { reason: 'Malformed MCP request' }
+            }
+          });
+        }
+
+        // Allow initialize and discovery methods without authentication
+        if (mcpRequest.method === 'initialize') {
+          // Handle initialize without auth for Claude Desktop compatibility
+          if (!this.requestHandler) {
+            return res.status(500).json({
+              jsonrpc: '2.0',
+              id: req.body.id,
+              error: {
+                code: -32603,
+                message: 'Internal error',
+                data: { reason: 'No request handler configured' }
+              }
+            });
+          }
+
+          // Use a default tenant for initialization
+          mcpRequest.tenantId = 'claude-desktop-init';
+          console.log(`[SSE] MCP Initialize - Method: ${mcpRequest.method}, Tenant: ${mcpRequest.tenantId}`);
+          
+          const response = await this.requestHandler(mcpRequest);
+          return res.json(response);
+        }
+
+        // For all other methods, require authentication
+        const authResult = await this.authenticateTenant(req);
+        if (!authResult.success) {
+          return res.status(401).json({
+            jsonrpc: '2.0',
+            id: req.body.id,
+            error: {
+              code: -32001,
+              message: 'Authentication failed',
+              data: { reason: authResult.error }
             }
           });
         }

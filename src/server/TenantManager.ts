@@ -71,10 +71,10 @@ export class TenantManager {
       return tenantInstance.server;
     }
 
-    // Handle demo tenant automatically for public endpoint
-    if (tenantId === 'demo-public-tenant') {
-      console.log(`[TenantManager] Auto-creating demo tenant for public access`);
-      // Demo tenant is always considered active for public endpoint
+    // Handle special tenants automatically for public/init endpoints
+    if (tenantId === 'demo-public-tenant' || tenantId === 'claude-desktop-init') {
+      console.log(`[TenantManager] Auto-creating ${tenantId} tenant for ${tenantId === 'demo-public-tenant' ? 'public' : 'desktop init'} access`);
+      // Special tenants are always considered active
     } else {
       // Verify tenant exists in auth system for regular tenants
       console.log(`[TenantManager] Looking up tenant info for: ${tenantId}`);
