@@ -696,6 +696,10 @@ async function main() {
 async function startSSEServer() {
   const { MultiTenantMCPServer } = await import('./server/MultiTenantMCPServer.js');
   
+  // Debug PORT environment variable for Railway
+  console.error(`🔍 Railway PORT debug: ${process.env.PORT || 'undefined'}`);
+  console.error(`🔍 All env vars containing PORT: ${JSON.stringify(Object.keys(process.env).filter(k => k.includes('PORT')).reduce((acc, k) => ({...acc, [k]: process.env[k]}), {}))}`);
+
   const config = {
     mode: 'sse' as const,
     httpConfig: {

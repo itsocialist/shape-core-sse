@@ -318,8 +318,9 @@ export class HttpServerTransport {
   public async start(): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        this.server = this.app.listen(this.config.port, () => {
-          console.log(`[SSE] HTTP/SSE server listening on port ${this.config.port}`);
+        // Bind to 0.0.0.0 for Railway compatibility
+        this.server = this.app.listen(this.config.port, '0.0.0.0', () => {
+          console.log(`[SSE] HTTP/SSE server listening on 0.0.0.0:${this.config.port}`);
           console.log(`[SSE] Health check: http://localhost:${this.config.port}/health`);
           console.log(`[SSE] MCP endpoint: http://localhost:${this.config.port}/mcp`);
           resolve();
