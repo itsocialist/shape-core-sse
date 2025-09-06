@@ -164,7 +164,62 @@ export class HttpServerTransport {
       }
     });
 
-    // MCP tool execution endpoint
+    // Public MCP endpoint for Claude Web (no auth required for demo)
+    this.app.post('/mcp/public', async (req: Request, res: Response) => {
+      try {
+        // Use a demo tenant for public access
+        const demoTenantId = 'demo-public-tenant';
+        
+        // Validate MCP request format
+        const mcpRequest = this.validateMCPRequest(req.body);
+        if (!mcpRequest) {
+          return res.status(400).json({
+            jsonrpc: '2.0',
+            id: req.body.id,
+            error: {
+              code: -32600,
+              message: 'Invalid Request',
+              data: { reason: 'Malformed MCP request' }
+            }
+          });
+        }
+
+        // Handle the MCP request with demo tenant
+        if (!this.requestHandler) {
+          return res.status(500).json({
+            jsonrpc: '2.0',
+            id: req.body.id,
+            error: {
+              code: -32603,
+              message: 'Internal error',
+              data: { reason: 'No request handler configured' }
+            }
+          });
+        }
+
+        // Add demo tenant context to the MCP request
+        mcpRequest.tenantId = demoTenantId;
+        
+        console.log(`[SSE] Public MCP Request - Method: ${mcpRequest.method}, Tenant: ${mcpRequest.tenantId}, Params:`, mcpRequest.params);
+
+        const response = await this.requestHandler(mcpRequest);
+        res.json(response);
+
+      } catch (error) {
+        console.error('[SSE] Public MCP endpoint error:', error);
+        res.status(500).json({
+          jsonrpc: '2.0',
+          id: req.body.id,
+          error: {
+            code: -32603,
+            message: 'Internal error',
+            data: { reason: error instanceof Error ? error.message : 'Unknown error' }
+          }
+        });
+      }
+    });
+
+    // MCP tool execution endpoint (authenticated)
     this.app.post('/mcp', async (req: Request, res: Response) => {
       try {
         // Authenticate tenant
