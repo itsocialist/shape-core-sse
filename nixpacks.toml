@@ -1,0 +1,19 @@
+[providers.node]
+version = "20"
+
+[phases.install]
+cmds = [
+  "npm ci --include=dev",
+]
+
+[phases.build]
+cmds = [
+  "npm run build"
+]
+
+[start]
+cmd = "npm run start:sse"
+
+[variables]
+NODE_ENV = "production"
+SHAPE_SSE_MODE = "true"

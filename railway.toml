@@ -1,0 +1,24 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "npm run start:sse"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+[[services]]
+name = "ship-ape-core-sse"
+
+[services.variables]
+NODE_ENV = "production"
+SHAPE_SSE_MODE = "true"
+PORT = { "$env" = "PORT" }
+SHIP_APE_MASTER_KEY = { "$env" = "SHIP_APE_MASTER_KEY" }
+
+[services.build]
+command = "npm run build"
+
+[services.deploy]
+command = "npm run start:sse"
