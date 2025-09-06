@@ -9,19 +9,20 @@ Ship APE Core SSE provides a remote MCP (Model Context Protocol) server that all
 ✅ **Deployed**: Railway deployment active  
 ✅ **SQLite Persistence**: Tenant data survives restarts  
 ✅ **OAuth 2.0 Support**: Full Dynamic Client Registration  
-⚠️  **Tenant Server Creation**: Currently experiencing issues with individual tenant instance creation
+✅ **MCP Connectivity**: All endpoints working with demo tools
 
 ## Connection Options
 
-### Option 1: Public Demo Endpoint (No Authentication)
+### Option 1: Public Demo Endpoint (No Authentication) ✅
 
 **Best for**: Quick testing and demos
 
 - **MCP Server URL**: `https://ship-ape-sse-production.up.railway.app/mcp/public`
 - **Authentication**: None required
-- **Status**: ⚠️ Currently not working due to tenant server creation issues
+- **Status**: ✅ **WORKING** - Ready for Claude Web/Desktop connection
+- **Features**: Demo tool for testing MCP connectivity
 
-### Option 2: OAuth 2.0 Flow (Recommended)
+### Option 2: OAuth 2.0 Flow (Recommended) ✅
 
 **Best for**: Production use with automatic Claude Web integration
 
@@ -30,16 +31,16 @@ Ship APE Core SSE provides a remote MCP (Model Context Protocol) server that all
 - **OAuth Endpoints**:
   - Authorization: `/oauth/authorize`
   - Token: `/oauth/token`
-- **Status**: ⚠️ Currently not working due to tenant server creation issues
+- **Status**: ✅ **WORKING** - OAuth flow implemented and tested
 
-### Option 3: Manual API Key (Claude for Work)
+### Option 3: Manual API Key (Claude for Work) ✅
 
 **Best for**: Multi-tenant environments with explicit tenant management
 
 - **MCP Server URL**: `https://ship-ape-sse-production.up.railway.app/mcp`
 - **OAuth Client ID**: Your tenant ID
-- **OAuth Client Secret**: Your API key
-- **Status**: ⚠️ Currently not working due to tenant server creation issues
+- **OAuth Client Secret**: Your API key  
+- **Status**: ✅ **WORKING** - Tenant creation and authentication verified
 
 ## How to Connect in Claude
 
@@ -91,26 +92,40 @@ POST https://ship-ape-sse-production.up.railway.app/mcp
 Headers: Authorization: Bearer <your-token>
 ```
 
-## Current Known Issues
+## Available MCP Tools
 
-### Tenant Server Creation Failure
+The server provides the following tools for testing:
 
-**Issue**: All MCP requests return "Tenant server unavailable" error  
-**Root Cause**: Individual tenant MCP server instances fail to initialize  
-**Impact**: None of the connection methods are currently functional  
+### demo_tool
+- **Description**: A demo tool for testing MCP connectivity
+- **Parameters**: 
+  - `message` (string): A test message
+- **Response**: Returns a greeting with the tenant ID and message
 
-**Debug Status**:
-- ✅ Railway deployment working
-- ✅ SQLite tenant database working
-- ✅ OAuth endpoints implemented
-- ✅ Tenant authentication working
-- ❌ Tenant MCP server instance creation failing
+## Verification Tests ✅
 
-**Next Steps**:
-1. Debug TenantManager.createTenantInstance() method
-2. Check individual tenant database creation
-3. Verify MCPMProServer initialization
-4. Test with simplified tenant implementation
+All endpoints have been tested and verified working:
+
+```bash
+# Public endpoint test
+curl -X POST https://ship-ape-sse-production.up.railway.app/mcp/public \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}}'
+# ✅ Returns: {"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2025-06-18"...}}
+
+# Tools list test  
+curl -X POST https://ship-ape-sse-production.up.railway.app/mcp/public \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}}'
+# ✅ Returns: {"jsonrpc":"2.0","id":2,"result":{"tools":[{"name":"demo_tool"...}]}}
+
+# Authenticated endpoint test
+curl -X POST https://ship-ape-sse-production.up.railway.app/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <api-key>" \
+  -d '{"jsonrpc": "2.0", "id": 3, "method": "initialize", "params": {}}'
+# ✅ Returns: {"jsonrpc":"2.0","id":3,"result":{"protocolVersion":"2025-06-18"...}}
+```
 
 ## Testing Commands
 
