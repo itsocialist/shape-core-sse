@@ -109,51 +109,128 @@ export class HttpServerTransport {
       });
     });
 
-    // OAuth token endpoint for Claude Web
+    // OAuth authorization endpoint for Dynamic Client Registration
+    this.app.get('/oauth/authorize', (req: Request, res: Response) => {
+      const { client_id, redirect_uri, response_type, state, scope } = req.query;
+      
+      if (response_type !== 'code') {
+        return res.redirect(`${redirect_uri}?error=unsupported_response_type&state=${state}`);
+      }
+
+      // For Claude Web, validate redirect URI is Claude's callback
+      if (redirect_uri !== 'https://claude.ai/api/mcp/auth_callback' && 
+          redirect_uri !== 'https://claude.com/api/mcp/auth_callback') {
+        return res.redirect(`${redirect_uri}?error=invalid_request&error_description=invalid_redirect_uri&state=${state}`);
+      }
+
+      // Generate authorization code
+      const authCode = `auth_${Math.random().toString(36).substr(2, 32)}`;
+      
+      // Store auth code temporarily (in production, use Redis/database)
+      (this as any).tempAuthCodes = (this as any).tempAuthCodes || new Map();
+      (this as any).tempAuthCodes.set(authCode, {
+        client_id: client_id as string,
+        redirect_uri: redirect_uri as string,
+        scope: scope as string,
+        expires: Date.now() + 600000 // 10 minutes
+      });
+
+      // Redirect back to Claude with authorization code
+      res.redirect(`${redirect_uri}?code=${authCode}&state=${state}`);
+    });
+
+    // OAuth token endpoint with proper DCR support
     this.app.post('/oauth/token', async (req: Request, res: Response) => {
       try {
-        const { client_id, client_secret, grant_type } = req.body;
+        const { grant_type, code, redirect_uri, client_id, client_secret } = req.body;
         
-        if (grant_type !== 'client_credentials') {
-          return res.status(400).json({
-            error: 'unsupported_grant_type',
-            error_description: 'Only client_credentials grant type is supported'
-          });
-        }
-
-        // Validate client credentials against tenant database
-        if (!client_id || !client_secret) {
-          return res.status(400).json({
-            error: 'invalid_request',
-            error_description: 'client_id and client_secret are required'
-          });
-        }
-
-        try {
-          // Use client_secret as API key for authentication
-          const authResult = await this.authenticateTenant({
-            headers: { authorization: `Bearer ${client_secret}` }
-          } as Request);
-          
-          if (!authResult.success) {
-            return res.status(401).json({
-              error: 'invalid_client',
-              error_description: 'Invalid client credentials'
+        if (grant_type === 'authorization_code') {
+          // Handle authorization code flow for Claude Web
+          if (!code || !redirect_uri) {
+            return res.status(400).json({
+              error: 'invalid_request',
+              error_description: 'code and redirect_uri are required'
             });
           }
 
-          // Return OAuth token response (using the same API key as access token)
-          res.json({
-            access_token: client_secret,
-            token_type: 'Bearer',
-            expires_in: 3600,
-            scope: 'mcp'
+          const tempAuthCodes = (this as any).tempAuthCodes || new Map();
+          const authData = tempAuthCodes.get(code);
+          
+          if (!authData || authData.expires < Date.now()) {
+            return res.status(400).json({
+              error: 'invalid_grant',
+              error_description: 'Invalid or expired authorization code'
+            });
+          }
+
+          if (authData.redirect_uri !== redirect_uri) {
+            return res.status(400).json({
+              error: 'invalid_grant',
+              error_description: 'redirect_uri mismatch'
+            });
+          }
+
+          // Clean up used auth code
+          tempAuthCodes.delete(code);
+
+          // Generate access token for Claude Web
+          const accessToken = `mcp_${Math.random().toString(36).substr(2, 48)}`;
+          
+          // Store token (in production, use database)
+          (this as any).accessTokens = (this as any).accessTokens || new Map();
+          (this as any).accessTokens.set(accessToken, {
+            client_id: authData.client_id,
+            scope: authData.scope,
+            tenant_id: 'claude-web-tenant', // Default tenant for Claude Web
+            expires: Date.now() + 3600000 // 1 hour
           });
 
-        } catch (error) {
-          res.status(401).json({
-            error: 'invalid_client',
-            error_description: 'Authentication failed'
+          return res.json({
+            access_token: accessToken,
+            token_type: 'Bearer',
+            expires_in: 3600,
+            scope: authData.scope || 'mcp'
+          });
+
+        } else if (grant_type === 'client_credentials') {
+          // Handle client credentials flow for custom tenants
+          if (!client_id || !client_secret) {
+            return res.status(400).json({
+              error: 'invalid_request',
+              error_description: 'client_id and client_secret are required'
+            });
+          }
+
+          try {
+            // Use client_secret as API key for authentication
+            const authResult = await this.authenticateTenant({
+              headers: { authorization: `Bearer ${client_secret}` }
+            } as Request);
+            
+            if (!authResult.success) {
+              return res.status(401).json({
+                error: 'invalid_client',
+                error_description: 'Invalid client credentials'
+              });
+            }
+
+            return res.json({
+              access_token: client_secret,
+              token_type: 'Bearer',
+              expires_in: 3600,
+              scope: 'mcp'
+            });
+
+          } catch (error) {
+            return res.status(401).json({
+              error: 'invalid_client',
+              error_description: 'Authentication failed'
+            });
+          }
+        } else {
+          return res.status(400).json({
+            error: 'unsupported_grant_type',
+            error_description: 'Only authorization_code and client_credentials grant types are supported'
           });
         }
       } catch (error) {
@@ -538,6 +615,21 @@ export class HttpServerTransport {
     const token = authHeader.slice(7); // Remove 'Bearer ' prefix
     
     try {
+      // Check if this is an OAuth access token (starts with 'mcp_')
+      if (token.startsWith('mcp_')) {
+        const accessTokens = (this as any).accessTokens || new Map();
+        const tokenData = accessTokens.get(token);
+        
+        if (!tokenData || tokenData.expires < Date.now()) {
+          return { success: false, error: 'Invalid or expired OAuth token' };
+        }
+        
+        return {
+          success: true,
+          tenantId: tokenData.tenant_id
+        };
+      }
+      
       // Use custom authentication handler if available, otherwise fallback to local authenticator
       if (this.authenticationHandler) {
         const result = await this.authenticationHandler(token);
