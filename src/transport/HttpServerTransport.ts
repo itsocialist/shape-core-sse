@@ -403,7 +403,8 @@ export class HttpServerTransport {
         if (mcpRequest.method === 'initialize' || 
             mcpRequest.method === 'tools/list' || 
             mcpRequest.method === 'prompts/list' || 
-            mcpRequest.method === 'resources/list') {
+            mcpRequest.method === 'resources/list' ||
+            mcpRequest.method === 'notifications/initialized') {
           
           // Handle discovery methods without auth for Claude compatibility
           if (!this.requestHandler) {
