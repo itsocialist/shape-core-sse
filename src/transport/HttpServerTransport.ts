@@ -109,6 +109,61 @@ export class HttpServerTransport {
       });
     });
 
+    // OAuth token endpoint for Claude Web
+    this.app.post('/oauth/token', async (req: Request, res: Response) => {
+      try {
+        const { client_id, client_secret, grant_type } = req.body;
+        
+        if (grant_type !== 'client_credentials') {
+          return res.status(400).json({
+            error: 'unsupported_grant_type',
+            error_description: 'Only client_credentials grant type is supported'
+          });
+        }
+
+        // Validate client credentials against tenant database
+        if (!client_id || !client_secret) {
+          return res.status(400).json({
+            error: 'invalid_request',
+            error_description: 'client_id and client_secret are required'
+          });
+        }
+
+        try {
+          // Use client_secret as API key for authentication
+          const authResult = await this.authenticateTenant({
+            headers: { authorization: `Bearer ${client_secret}` }
+          } as Request);
+          
+          if (!authResult.success) {
+            return res.status(401).json({
+              error: 'invalid_client',
+              error_description: 'Invalid client credentials'
+            });
+          }
+
+          // Return OAuth token response (using the same API key as access token)
+          res.json({
+            access_token: client_secret,
+            token_type: 'Bearer',
+            expires_in: 3600,
+            scope: 'mcp'
+          });
+
+        } catch (error) {
+          res.status(401).json({
+            error: 'invalid_client',
+            error_description: 'Authentication failed'
+          });
+        }
+      } catch (error) {
+        res.status(500).json({
+          error: 'server_error',
+          error_description: 'Internal server error'
+        });
+      }
+    });
+
     // MCP tool execution endpoint
     this.app.post('/mcp', async (req: Request, res: Response) => {
       try {
