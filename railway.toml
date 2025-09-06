@@ -14,7 +14,6 @@ name = "ship-ape-core-sse"
 [services.variables]
 NODE_ENV = "production"
 SHAPE_SSE_MODE = "true"
-PORT = { "$env" = "PORT" }
 SHIP_APE_MASTER_KEY = { "$env" = "SHIP_APE_MASTER_KEY" }
 
 [services.build]

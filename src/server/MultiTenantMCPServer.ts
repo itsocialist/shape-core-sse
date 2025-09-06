@@ -103,9 +103,12 @@ export class MultiTenantMCPServer {
   }
 
   private extractTenantFromRequest(request: MCPRequest): string | null {
-    // For now, we'll need to enhance this with proper tenant context
-    // This would typically come from the authentication middleware
-    // For development, we'll use a default tenant
+    // Use tenant ID from HTTP transport authentication
+    if (request.tenantId) {
+      return request.tenantId;
+    }
+    
+    // Fallback for development mode
     if (process.env.NODE_ENV === 'development') {
       return 'dev-tenant-001';
     }

@@ -4,15 +4,16 @@ version = "20"
 [phases.install]
 cmds = [
   "npm ci --include=dev",
+  "npm install -g tsx"
 ]
 
 [phases.build]
 cmds = [
-  "npm run build"
+  "echo 'Using tsx runtime, skipping TypeScript build'"
 ]
 
 [start]
-cmd = "npm run start:sse"
+cmd = "npm run start:sse:tsx"
 
 [variables]
 NODE_ENV = "production"

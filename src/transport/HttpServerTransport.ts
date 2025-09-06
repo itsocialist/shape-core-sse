@@ -21,6 +21,7 @@ export interface MCPRequest {
   method: string;
   params: any;
   id?: string | number;
+  tenantId?: string;
 }
 
 export interface MCPResponse {
@@ -131,6 +132,11 @@ export class HttpServerTransport {
             }
           });
         }
+
+        // Add tenant context to the MCP request
+        mcpRequest.tenantId = authResult.tenantId;
+        
+        console.log(`[SSE] MCP Request - Method: ${mcpRequest.method}, Tenant: ${mcpRequest.tenantId}, Params:`, mcpRequest.params);
 
         const response = await this.requestHandler(mcpRequest);
         

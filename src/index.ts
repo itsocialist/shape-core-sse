@@ -12,6 +12,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  InitializeRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 
 import { join } from 'path';
@@ -114,6 +115,21 @@ export class MCPMProServer {
   }
 
   private setupHandlers(): void {
+    // Handle MCP initialize request
+    this.server.setRequestHandler(InitializeRequestSchema, async (request) => {
+      return {
+        protocolVersion: '2025-06-18',
+        capabilities: {
+          tools: {},
+          logging: {}
+        },
+        serverInfo: {
+          name: '@briandawson/shape-core-sse',
+          version: '0.4.0'
+        }
+      };
+    });
+
     // Handle list tools request
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
       const tools = this.getAllTools();
@@ -571,7 +587,23 @@ export class MCPMProServer {
 
   // For testing - handle MCP requests directly
   async handleRequest(request: any): Promise<any> {
-    if (request.method === 'tools/list') {
+    if (request.method === 'initialize') {
+      return {
+        jsonrpc: '2.0',
+        id: request.id,
+        result: {
+          protocolVersion: '2025-06-18',
+          capabilities: {
+            tools: {},
+            logging: {}
+          },
+          serverInfo: {
+            name: '@briandawson/shape-core-sse',
+            version: '0.4.0'
+          }
+        }
+      };
+    } else if (request.method === 'tools/list') {
       return {
         jsonrpc: '2.0',
         id: request.id,
