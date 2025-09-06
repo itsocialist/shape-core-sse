@@ -1,7 +1,8 @@
 # Ship APE Core SSE - Multi-tenant MCP Server
 # Dockerfile for production deployment
 
-FROM node:20-alpine AS base
+# Development stage
+FROM node:20-alpine AS development
 
 # Install dependencies needed for native modules
 RUN apk add --no-cache \
@@ -16,22 +17,13 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig.json ./
 
-# Install dependencies
-RUN npm ci --only=production
-
-# Development stage
-FROM base AS development
+# Install all dependencies (including dev)
 RUN npm ci
 COPY . .
 EXPOSE 3000
 ENV NODE_ENV=development
 ENV SHAPE_SSE_MODE=true
 CMD ["npm", "run", "dev:sse"]
-
-# Build stage (simplified - direct source copy)
-FROM base AS build
-RUN npm ci --ignore-scripts
-COPY . .
 
 # Production stage
 FROM node:20-alpine AS production
@@ -51,12 +43,9 @@ WORKDIR /app
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodeuser -u 1001
 
-# Copy package files and install production dependencies
+# Copy package files and install production dependencies FROM SCRATCH
 COPY package*.json ./
-RUN npm ci --only=production && npm cache clean --force
-
-# Rebuild better-sqlite3 for Alpine Linux
-RUN npm rebuild better-sqlite3
+RUN npm ci --only=production --build-from-source && npm cache clean --force
 
 # Install tsx globally before switching users
 RUN npm install -g tsx
