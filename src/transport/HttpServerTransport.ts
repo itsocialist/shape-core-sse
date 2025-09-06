@@ -390,8 +390,12 @@ export class HttpServerTransport {
         }
 
         // Allow initialize and discovery methods without authentication
-        if (mcpRequest.method === 'initialize') {
-          // Handle initialize without auth for Claude Desktop compatibility
+        if (mcpRequest.method === 'initialize' || 
+            mcpRequest.method === 'tools/list' || 
+            mcpRequest.method === 'prompts/list' || 
+            mcpRequest.method === 'resources/list') {
+          
+          // Handle discovery methods without auth for Claude compatibility
           if (!this.requestHandler) {
             return res.status(500).json({
               jsonrpc: '2.0',
@@ -404,9 +408,9 @@ export class HttpServerTransport {
             });
           }
 
-          // Use a default tenant for initialization
+          // Use a default tenant for discovery
           mcpRequest.tenantId = 'claude-desktop-init';
-          console.log(`[SSE] MCP Initialize - Method: ${mcpRequest.method}, Tenant: ${mcpRequest.tenantId}`);
+          console.log(`[SSE] MCP Discovery - Method: ${mcpRequest.method}, Tenant: ${mcpRequest.tenantId}`);
           
           const response = await this.requestHandler(mcpRequest);
           return res.json(response);
