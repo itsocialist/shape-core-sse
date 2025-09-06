@@ -218,12 +218,42 @@ export class HttpServerTransport {
       }
     });
 
-    // Tenant registration endpoint (for future use)
+    // Admin-only tenant registration endpoint
     this.app.post('/tenant/register', async (req: Request, res: Response) => {
-      res.status(501).json({
-        error: 'Not implemented',
-        message: 'Tenant registration will be available in v0.4.1'
-      });
+      try {
+        // Authenticate admin using master key
+        const authResult = await this.authenticateAdmin(req);
+        if (!authResult.success) {
+          return res.status(401).json({
+            error: 'Admin authentication required',
+            message: 'Provide X-Master-Key header with valid master key'
+          });
+        }
+
+        const { tenantId, permissions } = req.body;
+        
+        const result = await this.authenticator.createTenant({
+          tenantId,
+          permissions: permissions || ['read', 'write']
+        });
+
+        res.json({
+          success: true,
+          tenant: {
+            tenantId: result.tenantId,
+            apiKey: result.apiKey,
+            permissions: permissions || ['read', 'write']
+          },
+          message: 'Tenant created successfully'
+        });
+
+      } catch (error) {
+        console.error('[SSE] Tenant registration error:', error);
+        res.status(400).json({
+          error: 'Registration failed',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
     });
 
     // Tenant status endpoint
@@ -252,6 +282,88 @@ export class HttpServerTransport {
       }
     });
 
+    // Admin-only tenant management endpoints
+    this.app.get('/admin/tenants', async (req: Request, res: Response) => {
+      try {
+        const authResult = await this.authenticateAdmin(req);
+        if (!authResult.success) {
+          return res.status(401).json({
+            error: 'Admin authentication required'
+          });
+        }
+
+        const tenants = this.authenticator.listTenants();
+        res.json({
+          success: true,
+          tenants,
+          totalCount: tenants.length,
+          activeCount: this.authenticator.getActiveTenantCount()
+        });
+
+      } catch (error) {
+        console.error('[SSE] Admin tenant list error:', error);
+        res.status(500).json({
+          error: 'Failed to list tenants',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    });
+
+    this.app.post('/admin/tenant/:tenantId/rotate-key', async (req: Request, res: Response) => {
+      try {
+        const authResult = await this.authenticateAdmin(req);
+        if (!authResult.success) {
+          return res.status(401).json({
+            error: 'Admin authentication required'
+          });
+        }
+
+        const { tenantId } = req.params;
+        const newApiKey = await this.authenticator.rotateApiKey(tenantId);
+        
+        res.json({
+          success: true,
+          tenantId,
+          newApiKey,
+          message: 'API key rotated successfully'
+        });
+
+      } catch (error) {
+        console.error('[SSE] API key rotation error:', error);
+        res.status(400).json({
+          error: 'Key rotation failed',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    });
+
+    this.app.delete('/admin/tenant/:tenantId', async (req: Request, res: Response) => {
+      try {
+        const authResult = await this.authenticateAdmin(req);
+        if (!authResult.success) {
+          return res.status(401).json({
+            error: 'Admin authentication required'
+          });
+        }
+
+        const { tenantId } = req.params;
+        await this.authenticator.deleteTenant(tenantId);
+        
+        res.json({
+          success: true,
+          tenantId,
+          message: 'Tenant deleted successfully'
+        });
+
+      } catch (error) {
+        console.error('[SSE] Tenant deletion error:', error);
+        res.status(400).json({
+          error: 'Deletion failed',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    });
+
     // 404 handler
     this.app.use((req: Request, res: Response) => {
       res.status(404).json({
@@ -261,8 +373,11 @@ export class HttpServerTransport {
           'GET /health',
           'POST /mcp',
           'GET /mcp/sse/:sessionId',
-          'POST /tenant/register',
-          'GET /tenant/status'
+          'POST /tenant/register (admin)',
+          'GET /tenant/status',
+          'GET /admin/tenants (admin)',
+          'POST /admin/tenant/:tenantId/rotate-key (admin)', 
+          'DELETE /admin/tenant/:tenantId (admin)'
         ]
       });
     });
@@ -290,6 +405,34 @@ export class HttpServerTransport {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Authentication failed'
+      };
+    }
+  }
+
+  private async authenticateAdmin(req: Request): Promise<{ success: boolean; error?: string }> {
+    try {
+      const masterKey = req.headers['x-master-key'] as string;
+      
+      if (!masterKey) {
+        return {
+          success: false,
+          error: 'Missing X-Master-Key header'
+        };
+      }
+
+      if (masterKey !== this.config.masterKey) {
+        return {
+          success: false,
+          error: 'Invalid master key'
+        };
+      }
+
+      return { success: true };
+
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Admin authentication failed'
       };
     }
   }
