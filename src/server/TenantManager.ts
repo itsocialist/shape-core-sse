@@ -126,11 +126,15 @@ export class TenantManager {
         
         // Handle basic MCP methods
         if (request.method === 'initialize') {
+          // Use the protocol version requested by the client, fallback to stable version
+          const requestedVersion = request.params?.protocolVersion || '2024-11-05';
+          const supportedVersion = requestedVersion.startsWith('2025-') ? requestedVersion : '2024-11-05';
+          
           return {
             jsonrpc: '2.0',
             id: request.id,
             result: {
-              protocolVersion: '2024-11-05', // Try older protocol version for Claude Desktop
+              protocolVersion: supportedVersion,
               capabilities: {
                 tools: {
                   listChanged: true
