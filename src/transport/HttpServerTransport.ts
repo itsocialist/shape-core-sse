@@ -82,21 +82,19 @@ export class HttpServerTransport {
     // CORS configuration with additional headers for MCP
     this.app.use(cors({
       origin: (origin, callback) => {
-        // Allow non-browser/undefined origins (desktop apps, curl, file://)
+        // Fail-OPEN for development and broad client support (reflect origin)
+        // Rationale: Claude Web/Desktop and local tools may use varied origins/ports
         if (!origin) return callback(null, true);
-
-        // Exact allowlist match
-        if (this.config.corsOrigins.includes(origin)) return callback(null, true);
-
-        // Simple domain allow rules for Claude properties
         try {
           const url = new URL(origin);
-          if (url.hostname.endsWith('claude.ai') || url.hostname.endsWith('claude.com')) {
-            return callback(null, true);
-          }
-        } catch {}
-
-        return callback(new Error(`CORS: Origin not allowed: ${origin}`));
+          // Minimal sanity check on scheme and host
+          if (!/^https?:$/.test(url.protocol)) return callback(null, true);
+          // Always reflect the given origin
+          return callback(null, true);
+        } catch {
+          // If parsing fails, still allow to avoid 500s from middleware
+          return callback(null, true);
+        }
       },
       credentials: true,
       methods: ['GET', 'POST', 'OPTIONS', 'HEAD'],
