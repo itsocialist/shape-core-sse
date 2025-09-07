@@ -255,40 +255,60 @@ export class HttpServerTransport {
       });
     });
 
-    // OAuth authorization endpoint for Dynamic Client Registration
+    // OAuth authorization endpoint (supports DCR + Inspector PKCE)
     this.app.get('/oauth/authorize', (req: Request, res: Response) => {
-      const { client_id, redirect_uri, response_type, state, scope } = req.query;
-      
+      const { client_id, redirect_uri, response_type, state, scope, code_challenge, code_challenge_method } = req.query as Record<string, string>;
+
+      // Require authorization code flow
       if (response_type !== 'code') {
-        return res.redirect(`${redirect_uri}?error=unsupported_response_type&state=${state}`);
+        const ru = redirect_uri || '';
+        return res.redirect(`${ru}?error=unsupported_response_type&state=${encodeURIComponent(state || '')}`);
       }
 
-      // For Claude Web, validate redirect URI is Claude's callback
-      if (redirect_uri !== 'https://claude.ai/api/mcp/auth_callback' && 
-          redirect_uri !== 'https://claude.com/api/mcp/auth_callback') {
-        return res.redirect(`${redirect_uri}?error=invalid_request&error_description=invalid_redirect_uri&state=${state}`);
+      // Validate client registration if available
+      (this as any).registeredClients = (this as any).registeredClients || new Map();
+      const clients: Map<string, any> = (this as any).registeredClients;
+      const reg = clients.get(client_id);
+
+      // If we have a registered client, enforce redirect_uri match
+      let finalRedirect = redirect_uri;
+      if (reg) {
+        const allowed = (reg.redirect_uris || []) as string[];
+        if (!finalRedirect && allowed.length) finalRedirect = allowed[0];
+        if (!allowed.includes(finalRedirect)) {
+          return res.status(400).send('invalid_redirect_uri');
+        }
+      } else {
+        // Fallback allow for Claude Web legacy
+        const isClaude = redirect_uri === 'https://claude.ai/api/mcp/auth_callback' || redirect_uri === 'https://claude.com/api/mcp/auth_callback';
+        if (!isClaude) {
+          // If not registered and not Claude, reject to prevent open redirects
+          return res.status(400).send('invalid_client');
+        }
       }
 
       // Generate authorization code
       const authCode = `auth_${Math.random().toString(36).substr(2, 32)}`;
-      
+
       // Store auth code temporarily (in production, use Redis/database)
       (this as any).tempAuthCodes = (this as any).tempAuthCodes || new Map();
       (this as any).tempAuthCodes.set(authCode, {
-        client_id: client_id as string,
-        redirect_uri: redirect_uri as string,
-        scope: scope as string,
-        expires: Date.now() + 600000 // 10 minutes
+        client_id,
+        redirect_uri: finalRedirect,
+        scope: scope || 'mcp',
+        code_challenge: code_challenge || undefined,
+        code_challenge_method: code_challenge_method || undefined,
+        expires: Date.now() + 10 * 60 * 1000 // 10 minutes
       });
 
-      // Redirect back to Claude with authorization code
-      res.redirect(`${redirect_uri}?code=${authCode}&state=${state}`);
+      // Redirect back with code
+      res.redirect(`${finalRedirect}?code=${encodeURIComponent(authCode)}&state=${encodeURIComponent(state || '')}`);
     });
 
     // OAuth token endpoint with proper DCR support
     this.app.post('/oauth/token', async (req: Request, res: Response) => {
       try {
-        const { grant_type, code, redirect_uri, client_id, client_secret } = req.body;
+        const { grant_type, code, redirect_uri, client_id, client_secret, code_verifier } = req.body;
         
         if (grant_type === 'authorization_code') {
           // Handle authorization code flow for Claude Web
@@ -314,6 +334,35 @@ export class HttpServerTransport {
               error: 'invalid_grant',
               error_description: 'redirect_uri mismatch'
             });
+          }
+
+          // Enforce client match
+          if (authData.client_id && client_id && authData.client_id !== client_id) {
+            return res.status(400).json({ error: 'invalid_client', error_description: 'client_id mismatch' });
+          }
+
+          // Optional PKCE validation
+          if (authData.code_challenge) {
+            if (!code_verifier) {
+              return res.status(400).json({ error: 'invalid_request', error_description: 'code_verifier required for PKCE' });
+            }
+            try {
+              const method = (authData.code_challenge_method || 'plain').toUpperCase();
+              let computed: string;
+              if (method === 'S256') {
+                const { createHash } = await import('crypto');
+                const sha = createHash('sha256').update(code_verifier).digest();
+                // base64url
+                computed = sha.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+              } else {
+                computed = code_verifier;
+              }
+              if (computed !== authData.code_challenge) {
+                return res.status(400).json({ error: 'invalid_grant', error_description: 'PKCE verification failed' });
+              }
+            } catch (e) {
+              return res.status(400).json({ error: 'invalid_grant', error_description: 'PKCE processing failed' });
+            }
           }
 
           // Clean up used auth code
