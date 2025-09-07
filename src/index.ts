@@ -103,13 +103,22 @@ export class MCPMProServer {
     
     console.error('🚀 Initializing Ship APE Core services...');
     
-    // Register filesystem adapter
-    const fsAdapter = new FilesystemAdapter('/Users/briandawson');
-    await this.registry.register(fsAdapter);
+    // Register filesystem adapter (configurable root, tolerant if unavailable)
+    const fsRoot = process.env.FILESYSTEM_ROOT || process.env.SHIP_APE_FS_ROOT || process.cwd();
+    try {
+      const fsAdapter = new FilesystemAdapter(fsRoot);
+      await this.registry.register(fsAdapter);
+    } catch (err) {
+      console.error(`⚠️  Skipping filesystem adapter: ${err instanceof Error ? err.message : String(err)} (root=${fsRoot})`);
+    }
     
-    // Register Git adapter
-    const gitAdapter = new GitAdapter(process.cwd());
-    await this.registry.register(gitAdapter);
+    // Register Git adapter (always safe to point at working directory)
+    try {
+      const gitAdapter = new GitAdapter(process.cwd());
+      await this.registry.register(gitAdapter);
+    } catch (err) {
+      console.error(`⚠️  Skipping git adapter: ${err instanceof Error ? err.message : String(err)}`);
+    }
     
     console.error('✅ All services initialized (filesystem + git)');
   }
