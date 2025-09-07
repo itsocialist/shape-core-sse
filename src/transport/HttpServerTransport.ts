@@ -383,6 +383,28 @@ export class HttpServerTransport {
       }
     });
 
+    // GET /mcp endpoint for server info (required by Claude Web after initialization)
+    this.app.get('/mcp', (req: Request, res: Response) => {
+      res.json({
+        name: 'Ship APE Core SSE',
+        version: '0.4.0',
+        description: 'Multi-tenant MCP server for Ship APE platform integration',
+        protocol_version: '2025-06-18',
+        transport: 'http',
+        capabilities: {
+          tools: { listChanged: true },
+          resources: { subscribe: true, listChanged: true },
+          prompts: { listChanged: true },
+          logging: {}
+        },
+        authentication: {
+          type: 'oauth2',
+          authorization_endpoint: `https://${req.get('host')}/oauth/authorize`,
+          token_endpoint: `https://${req.get('host')}/oauth/token`
+        }
+      });
+    });
+
     // MCP tool execution endpoint (authenticated)
     this.app.post('/mcp', async (req: Request, res: Response) => {
       try {
