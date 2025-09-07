@@ -604,6 +604,15 @@ export class HttpServerTransport {
           console.log(`[SSE] MCP Discovery - Method: ${mcpRequest.method}, Tenant: ${mcpRequest.tenantId}`);
           
           const response = await this.requestHandler(mcpRequest);
+          // Add explicit auth hint inside initialize response as a robustness aid
+          if (response && mcpRequest.method === 'initialize' && (response as any).result) {
+            const host = req.get('host');
+            (response as any).result.authentication = {
+              type: 'oauth2',
+              authorization_endpoint: `https://${host}/oauth/authorize`,
+              token_endpoint: `https://${host}/oauth/token`
+            };
+          }
           
           // Handle notifications (null response) - don't send HTTP response for notifications
           if (response === null) {
@@ -700,6 +709,14 @@ export class HttpServerTransport {
           }
         });
       }
+    });
+    // Route aliases to support clients that post to origin or /rpc
+    this.app.post('/', async (req: Request, res: Response) => {
+      // Forward to /mcp handler logic by invoking the same code path
+      (this.app as any)._router.handle({ ...req, url: '/mcp', originalUrl: '/mcp' }, res, () => {});
+    });
+    this.app.post('/rpc', async (req: Request, res: Response) => {
+      (this.app as any)._router.handle({ ...req, url: '/mcp', originalUrl: '/mcp' }, res, () => {});
     });
 
     // Simple SSE endpoint for MCP inspector (no auth required for testing)
