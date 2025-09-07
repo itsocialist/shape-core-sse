@@ -65,10 +65,12 @@ export class HttpServerTransport {
   private tenantDeletionHandler?: TenantDeletionHandler;
   private tenantListHandler?: TenantListHandler;
   private authenticationHandler?: AuthenticationHandler;
+  private debugEnabled: boolean;
 
   constructor(private config: HttpTransportConfig) {
     this.app = express();
     this.authenticator = new TenantAuthenticator(config.masterKey);
+    this.debugEnabled = (process.env.LOG_LEVEL === 'debug') || (process.env.ENABLE_REQUEST_LOGGING === 'true');
     this.setupMiddleware();
     this.setupRoutes();
   }
@@ -125,6 +127,11 @@ export class HttpServerTransport {
     // Request logging
     this.app.use((req, res, next) => {
       console.log(`[SSE] ${req.method} ${req.path} - ${new Date().toISOString()}`);
+      if (this.debugEnabled) {
+        const origin = req.headers.origin || req.get('Origin');
+        const hasAuth = !!req.headers.authorization || !!(req.query?.access_token);
+        console.log(`[SSE][dbg] origin=${origin || '-'} auth=${hasAuth ? 'yes' : 'no'} ua=${req.get('User-Agent') || '-'}`);
+      }
       next();
     });
   }
@@ -320,6 +327,16 @@ export class HttpServerTransport {
     this.app.post('/oauth/token', async (req: Request, res: Response) => {
       try {
         const { grant_type, code, redirect_uri, client_id, client_secret, code_verifier } = req.body;
+        if (this.debugEnabled) {
+          console.log('[SSE][dbg] /oauth/token request', {
+            grant_type,
+            client_id,
+            redirect_uri,
+            has_code: Boolean(code),
+            has_client_secret: Boolean(client_secret),
+            has_code_verifier: Boolean(code_verifier)
+          });
+        }
         
         if (grant_type === 'authorization_code') {
           // Handle authorization code flow for Claude Web
@@ -404,12 +421,16 @@ export class HttpServerTransport {
             expires: Date.now() + 3600000 // 1 hour
           });
 
-          return res.json({
+          const tokenResp = {
             access_token: accessToken,
             token_type: 'Bearer',
             expires_in: 3600,
             scope: authData.scope || 'mcp'
-          });
+          };
+          if (this.debugEnabled) {
+            console.log('[SSE][dbg] /oauth/token issued', { tenant_id: oauthTenantId });
+          }
+          return res.json(tokenResp);
 
         } else if (grant_type === 'client_credentials') {
           // Handle client credentials flow for custom tenants
@@ -433,12 +454,16 @@ export class HttpServerTransport {
               });
             }
 
-            return res.json({
+            const tokenResp2 = {
               access_token: client_secret,
               token_type: 'Bearer',
               expires_in: 3600,
               scope: 'mcp'
-            });
+            };
+            if (this.debugEnabled) {
+              console.log('[SSE][dbg] /oauth/token client_credentials ok');
+            }
+            return res.json(tokenResp2);
 
           } catch (error) {
             return res.status(401).json({
@@ -499,6 +524,14 @@ export class HttpServerTransport {
         console.log(`[SSE] Public MCP Request - Method: ${mcpRequest.method}, Tenant: ${mcpRequest.tenantId}, Params:`, mcpRequest.params);
 
         const response = await this.requestHandler(mcpRequest);
+        if (this.debugEnabled) {
+          const method = mcpRequest.method;
+          let extra: any = undefined;
+          if (method === 'tools/list' && response && (response as any).result?.tools) {
+            extra = { tools: (response as any).result.tools.length };
+          }
+          console.log('[SSE][dbg] /mcp/public response', { method, extra });
+        }
         
         // Handle notifications (null response) - don't send HTTP response for notifications
         if (response === null) {
@@ -607,6 +640,14 @@ export class HttpServerTransport {
         console.log(`[SSE] MCP Request - Method: ${mcpRequest.method}, Tenant: ${mcpRequest.tenantId}, Params:`, mcpRequest.params);
 
         const response = await this.requestHandler(mcpRequest);
+        if (this.debugEnabled) {
+          const method = mcpRequest.method;
+          let extra: any = undefined;
+          if (method === 'tools/list' && response && (response as any).result?.tools) {
+            extra = { tools: (response as any).result.tools.length };
+          }
+          console.log('[SSE][dbg] /mcp response', { method, tenant: mcpRequest.tenantId, extra });
+        }
         
         // Handle notifications (null response) - don't send HTTP response for notifications
         if (response === null) {
@@ -732,6 +773,13 @@ export class HttpServerTransport {
         });
 
         console.log(`[SSE] Session ${sessionId} connected for tenant ${authResult.tenantId}`);
+        if (this.debugEnabled) {
+          console.log('[SSE][dbg] SSE opened', {
+            sessionId,
+            tenantId: authResult.tenantId,
+            origin: req.headers.origin || req.get('Origin') || '-'
+          });
+        }
       } catch (error) {
         console.error('[SSE] SSE connection error:', error);
         res.status(500).json({
