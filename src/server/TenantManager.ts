@@ -209,6 +209,14 @@ export class TenantManager {
               prompts: [] // No prompts for now
             }
           };
+        } else if (request.method === 'logging/setLevel') {
+          // Handle logging level setting
+          console.log(`[TenantManager] Logging level set for tenant ${tenantId}:`, request.params?.level);
+          return {
+            jsonrpc: '2.0',
+            id: request.id,
+            result: {} // Empty result for successful logging/setLevel
+          };
         } else {
           return {
             jsonrpc: '2.0',
