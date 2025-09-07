@@ -565,6 +565,7 @@ export class HttpServerTransport {
     // MCP tool execution endpoint (authenticated)
     this.app.post('/mcp', async (req: Request, res: Response) => {
       try {
+        const requireAuthForTools = process.env.REQUIRE_AUTH_FOR_TOOLS === 'true';
         const mcpRequest = this.validateMCPRequest(req.body);
         if (!mcpRequest) {
           return res.status(400).json({
@@ -580,7 +581,7 @@ export class HttpServerTransport {
 
         // Allow initialize and discovery methods without authentication
         if (mcpRequest.method === 'initialize' || 
-            mcpRequest.method === 'tools/list' || 
+            (mcpRequest.method === 'tools/list' && !requireAuthForTools) || 
             mcpRequest.method === 'prompts/list' || 
             mcpRequest.method === 'resources/list' ||
             mcpRequest.method === 'notifications/initialized') {
@@ -611,6 +612,23 @@ export class HttpServerTransport {
           }
           
           return res.json(response);
+        }
+
+        // If we reach here and auth is required for tools/list, enforce it
+        if (requireAuthForTools && mcpRequest.method === 'tools/list') {
+          if (this.debugEnabled) {
+            console.log('[SSE][dbg] blocking unauth tools/list -> 401 to trigger OAuth');
+          }
+          res.setHeader('WWW-Authenticate', 'Bearer realm="mcp"');
+          return res.status(401).json({
+            jsonrpc: '2.0',
+            id: req.body.id,
+            error: {
+              code: -32001,
+              message: 'Authentication required',
+              data: { reason: 'Set Authorization: Bearer <token>' }
+            }
+          });
         }
 
         // For all other methods, require authentication
