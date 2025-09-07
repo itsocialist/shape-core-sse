@@ -207,7 +207,9 @@ export class HttpServerTransport {
 
     // Additional OAuth discovery endpoints that Claude Web looks for
     this.app.get('/.well-known/oauth-protected-resource', (req: Request, res: Response) => {
+      // 2025-DRAFT-v2 expects a top-level "resource" string
       res.json({
+        resource: `https://${req.get('host')}/mcp`,
         resource_server: `https://${req.get('host')}`,
         authorization_servers: [`https://${req.get('host')}`],
         scopes_supported: ['mcp'],
@@ -245,6 +247,7 @@ export class HttpServerTransport {
 
     this.app.get('/.well-known/oauth-protected-resource/mcp', (req: Request, res: Response) => {
       res.json({
+        resource: `https://${req.get('host')}/mcp`,
         resource_server: `https://${req.get('host')}/mcp`,
         authorization_servers: [`https://${req.get('host')}`],
         scopes_required: ['mcp'],
