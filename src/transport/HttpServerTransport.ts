@@ -817,11 +817,14 @@ export class HttpServerTransport {
         }
 
         const tenants = this.tenantListHandler ? this.tenantListHandler() : this.authenticator.listTenants();
+        const debugStats = this.authenticator.getDebugStats();
+        console.log(`[Admin] List tenants -> count=${tenants.length}, dbPath=${debugStats.dbPath}, total=${debugStats.total}, active=${debugStats.active}`);
         res.json({
           success: true,
           tenants,
           totalCount: tenants.length,
-          activeCount: this.authenticator.getActiveTenantCount()
+          activeCount: this.authenticator.getActiveTenantCount(),
+          debug: debugStats
         });
 
       } catch (error) {
@@ -831,6 +834,19 @@ export class HttpServerTransport {
           message: error instanceof Error ? error.message : 'Unknown error'
         });
       }
+    });
+
+    // Admin debug: tenant DB info
+    this.app.get('/admin/debug/tenants', async (req: Request, res: Response) => {
+      const authResult = await this.authenticateAdmin(req);
+      if (!authResult.success) {
+        return res.status(401).json({ error: 'Admin authentication required' });
+      }
+      const stats = this.authenticator.getDebugStats();
+      res.json({
+        success: true,
+        stats,
+      });
     });
 
     this.app.post('/admin/tenant/:tenantId/rotate-key', async (req: Request, res: Response) => {

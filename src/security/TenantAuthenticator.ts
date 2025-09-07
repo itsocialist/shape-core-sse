@@ -23,18 +23,25 @@ export interface TenantCredentials {
 
 export class TenantAuthenticator {
   private db: Database.Database;
+  private tenantDbPath: string;
 
   constructor(private masterKey: string, dbPath?: string) {
     // Initialize persistent tenant database
     const tenantDbPath = dbPath || join(process.env.TENANT_DATA_PATH || './tenant-data', 'tenants.db');
+    this.tenantDbPath = tenantDbPath;
     this.db = new Database(tenantDbPath);
     
     this.initializeDatabase();
+    console.log(`[Auth] Tenant DB initialized at: ${tenantDbPath}`);
     
     // Initialize with a default tenant for development/testing
     if (process.env.NODE_ENV === 'development') {
       this.createDevelopmentTenant();
     }
+  }
+
+  public getDbPath(): string {
+    return this.tenantDbPath;
   }
 
   private initializeDatabase(): void {
@@ -232,6 +239,7 @@ export class TenantAuthenticator {
       status: string;
     }>;
     
+    console.log(`[Auth] listTenants: ${rows.length} rows from ${this.tenantDbPath}`);
     return rows.map(row => ({
       tenantId: row.tenant_id,
       createdAt: new Date(row.created_at),
@@ -295,5 +303,11 @@ export class TenantAuthenticator {
     } catch {
       return false;
     }
+  }
+
+  public getDebugStats(): { dbPath: string; total: number; active: number } {
+    const countAll = this.db.prepare('SELECT COUNT(*) as c FROM tenants').get() as any;
+    const countActive = this.db.prepare("SELECT COUNT(*) as c FROM tenants WHERE status = 'active'").get() as any;
+    return { dbPath: this.tenantDbPath, total: Number(countAll?.c || 0), active: Number(countActive?.c || 0) };
   }
 }
