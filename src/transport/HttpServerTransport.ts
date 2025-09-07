@@ -189,6 +189,53 @@ export class HttpServerTransport {
       });
     });
 
+    // Additional OAuth discovery endpoints that Claude Web looks for
+    this.app.get('/.well-known/oauth-protected-resource', (req: Request, res: Response) => {
+      res.json({
+        resource_server: `https://${req.get('host')}`,
+        authorization_servers: [`https://${req.get('host')}`],
+        scopes_supported: ['mcp'],
+        bearer_methods_supported: ['header'],
+        resource_documentation: `https://${req.get('host')}/mcp`
+      });
+    });
+
+    this.app.get('/.well-known/openid-configuration', (req: Request, res: Response) => {
+      // OpenID Connect discovery (Claude Web sometimes looks for this)
+      res.json({
+        issuer: `https://${req.get('host')}`,
+        authorization_endpoint: `https://${req.get('host')}/oauth/authorize`,
+        token_endpoint: `https://${req.get('host')}/oauth/token`,
+        registration_endpoint: `https://${req.get('host')}/register`,
+        scopes_supported: ['mcp', 'openid'],
+        response_types_supported: ['code'],
+        grant_types_supported: ['authorization_code', 'client_credentials'],
+        token_endpoint_auth_methods_supported: ['client_secret_basic', 'client_secret_post'],
+        code_challenge_methods_supported: ['S256', 'plain']
+      });
+    });
+
+    // MCP-specific OAuth discovery endpoints
+    this.app.get('/.well-known/oauth-authorization-server/mcp', (req: Request, res: Response) => {
+      res.json({
+        issuer: `https://${req.get('host')}`,
+        authorization_endpoint: `https://${req.get('host')}/oauth/authorize`,
+        token_endpoint: `https://${req.get('host')}/oauth/token`,
+        registration_endpoint: `https://${req.get('host')}/register`,
+        scopes_supported: ['mcp'],
+        resource_server: `https://${req.get('host')}/mcp`
+      });
+    });
+
+    this.app.get('/.well-known/oauth-protected-resource/mcp', (req: Request, res: Response) => {
+      res.json({
+        resource_server: `https://${req.get('host')}/mcp`,
+        authorization_servers: [`https://${req.get('host')}`],
+        scopes_required: ['mcp'],
+        bearer_methods_supported: ['header']
+      });
+    });
+
     // OAuth authorization endpoint for Dynamic Client Registration
     this.app.get('/oauth/authorize', (req: Request, res: Response) => {
       const { client_id, redirect_uri, response_type, state, scope } = req.query;
