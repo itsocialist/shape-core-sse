@@ -109,6 +109,34 @@ Based on Anthropic's official MCP documentation, this document outlines the corr
 ## Next Steps
 
 1. Debug Claude Desktop logs for specific error messages
-2. Adjust MCP protocol version if needed
-3. Test with MCP inspector tool if available
+2. Adjust MCP protocol version if needed (set to 2024-11-05 now)
+3. Test with MCP inspector tool
 4. Validate exact capability structure expected by Claude Desktop
+
+## Smoke Test (Remote)
+
+Run a quick end‑to‑end check against your deployed URL.
+
+```bash
+# Required: BASE_URL; Optional: API_KEY, SESSION_ID
+BASE_URL=https://<your-host> \
+API_KEY=<your-api-key> \
+npm run smoke:remote
+```
+
+What it verifies:
+- GET /health
+- POST /mcp/public initialize
+- POST /mcp initialize (when API_KEY provided)
+- tools/list on public or auth path
+- SSE stream at /mcp/sse?sessionId=...&access_token=...
+
+## MCP Inspector
+
+Point the inspector to your base server and use these endpoints:
+
+- HTTP JSON‑RPC: POST `<base>/mcp` (auth) or `<base>/mcp/public` (no‑auth)
+- SSE stream (EventSource‑friendly): GET `<base>/mcp/sse?sessionId={id}&access_token={token}`
+- Alias: GET `<base>/sse?sessionId={id}&access_token={token}`
+
+Protocol version returned is `2024-11-05` to match current Claude Web/Desktop expectations.

@@ -118,7 +118,7 @@ export class MCPMProServer {
     // Handle MCP initialize request
     this.server.setRequestHandler(InitializeRequestSchema, async (request) => {
       return {
-        protocolVersion: '2025-06-18',
+        protocolVersion: '2024-11-05',
         capabilities: {
           tools: {},
           logging: {}
@@ -592,7 +592,7 @@ export class MCPMProServer {
         jsonrpc: '2.0',
         id: request.id,
         result: {
-          protocolVersion: '2025-06-18',
+          protocolVersion: '2024-11-05',
           capabilities: {
             tools: {},
             logging: {}
@@ -706,7 +706,7 @@ async function startSSEServer() {
       port: parseInt(process.env.PORT || '3000'),
       corsOrigins: process.env.CORS_ORIGINS ? 
         process.env.CORS_ORIGINS.split(',') : 
-        ['https://claude.ai', 'http://localhost:3000'],
+        ['https://claude.ai', 'https://web.claude.ai', 'https://claude.com', 'http://localhost:3000', 'http://localhost:5173'],
       masterKey: process.env.SHIP_APE_MASTER_KEY || 'dev-master-key-change-in-production'
     },
     tenantDataPath: process.env.TENANT_DATA_PATH || join(process.cwd(), 'tenant-data')

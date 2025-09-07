@@ -81,19 +81,37 @@ export class HttpServerTransport {
 
     // CORS configuration with additional headers for MCP
     this.app.use(cors({
-      origin: this.config.corsOrigins,
+      origin: (origin, callback) => {
+        // Allow non-browser/undefined origins (desktop apps, curl, file://)
+        if (!origin) return callback(null, true);
+
+        // Exact allowlist match
+        if (this.config.corsOrigins.includes(origin)) return callback(null, true);
+
+        // Simple domain allow rules for Claude properties
+        try {
+          const url = new URL(origin);
+          if (url.hostname.endsWith('claude.ai') || url.hostname.endsWith('claude.com')) {
+            return callback(null, true);
+          }
+        } catch {}
+
+        return callback(new Error(`CORS: Origin not allowed: ${origin}`));
+      },
       credentials: true,
       methods: ['GET', 'POST', 'OPTIONS', 'HEAD'],
       allowedHeaders: [
-        'Content-Type', 
-        'Authorization', 
+        'Content-Type',
+        'Authorization',
         'X-Master-Key',
         'X-API-Key',
         'anthropic-beta',
+        'anthropic-version',
         'User-Agent',
         'Accept',
         'Accept-Language',
-        'Accept-Encoding'
+        'Accept-Encoding',
+        'X-Session-Id'
       ],
       exposedHeaders: [
         'X-RateLimit-Limit',
@@ -580,7 +598,7 @@ export class HttpServerTransport {
           name: 'Ship APE Core SSE',
           version: '0.4.0',
           description: 'Multi-tenant MCP server for Ship APE platform integration',
-          protocol_version: '2025-06-18',
+          protocol_version: '2024-11-05',
           transport: 'http',
           capabilities: {
             tools: { listChanged: true },
@@ -597,10 +615,10 @@ export class HttpServerTransport {
       }
     });
 
-    // Server-Sent Events endpoint
-    this.app.get('/mcp/sse/:sessionId', async (req: Request, res: Response) => {
+    // Helper to open SSE stream
+    const openSSE = async (req: Request, res: Response, sessionId: string) => {
       try {
-        // Authenticate tenant
+        // Authenticate tenant (supports Authorization header or access_token query)
         const authResult = await this.authenticateTenant(req);
         if (!authResult.success) {
           return res.status(401).json({
@@ -609,8 +627,6 @@ export class HttpServerTransport {
           });
         }
 
-        const sessionId = req.params.sessionId;
-        
         // Setup SSE headers
         res.writeHead(200, {
           'Content-Type': 'text/event-stream',
@@ -642,7 +658,6 @@ export class HttpServerTransport {
         });
 
         console.log(`[SSE] Session ${sessionId} connected for tenant ${authResult.tenantId}`);
-
       } catch (error) {
         console.error('[SSE] SSE connection error:', error);
         res.status(500).json({
@@ -650,6 +665,24 @@ export class HttpServerTransport {
           reason: error instanceof Error ? error.message : 'Unknown error'
         });
       }
+    };
+
+    // Main SSE endpoint with explicit session id in path
+    this.app.get('/mcp/sse/:sessionId', async (req: Request, res: Response) => {
+      const sessionId = req.params.sessionId;
+      return openSSE(req, res, sessionId);
+    });
+
+    // SSE without session in path: /mcp/sse?sessionId=... or auto-generate
+    this.app.get('/mcp/sse', async (req: Request, res: Response) => {
+      const sessionId = (req.query.sessionId as string) || `sess_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      return openSSE(req, res, sessionId);
+    });
+
+    // Friendly aliases for inspectors/clients
+    this.app.get('/sse', async (req: Request, res: Response) => {
+      const sessionId = (req.query.sessionId as string) || `sess_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      return openSSE(req, res, sessionId);
     });
 
     // Admin-only tenant registration endpoint
@@ -834,12 +867,22 @@ export class HttpServerTransport {
     tenantId?: string;
     error?: string;
   }> {
+    // Prefer Authorization header
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return { success: false, error: 'Missing or invalid Authorization header' };
+    let token: string | undefined;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.slice(7);
     }
 
-    const token = authHeader.slice(7); // Remove 'Bearer ' prefix
+    // Fallback to query params for EventSource or constrained clients
+    if (!token) {
+      const qp: any = req.query || {};
+      token = (qp.access_token as string) || (qp.token as string) || (qp.api_key as string);
+    }
+
+    if (!token) {
+      return { success: false, error: 'Missing token (Authorization header or access_token query)' };
+    }
     
     try {
       // Check if this is an OAuth access token (starts with 'mcp_')
@@ -848,7 +891,7 @@ export class HttpServerTransport {
         const tokenData = accessTokens.get(token);
         
         if (!tokenData || tokenData.expires < Date.now()) {
-          return { success: false, error: 'Invalid or expired OAuth token' };
+          return { success: false, error: 'Invalid or expired access token' };
         }
         
         return {

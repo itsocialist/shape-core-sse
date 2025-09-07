@@ -50,7 +50,7 @@ docker run -d \
     -e NODE_ENV=production \
     -e SHAPE_SSE_MODE=true \
     -e SHIP_APE_MASTER_KEY="$MASTER_KEY" \
-    -e CORS_ORIGINS="https://claude.ai,https://web.claude.ai,http://localhost:3000" \
+    -e CORS_ORIGINS="https://claude.ai,https://web.claude.ai,https://claude.com,http://localhost:3000" \
     -e TENANT_DATA_PATH="/app/tenant-data" \
     -e ENABLE_REQUEST_LOGGING=true \
     --restart unless-stopped \

@@ -35,6 +35,7 @@
     "perf:compare": "tsx tests/performance/performance-compare.ts",
     "lint": "eslint src/**/*.ts",
     "type-check": "tsc --noEmit",
+    "smoke:remote": "node scripts/test-remote.mjs",
     "prepare": "npm run build || echo 'Build skipped in production'"
   },
   "keywords": [

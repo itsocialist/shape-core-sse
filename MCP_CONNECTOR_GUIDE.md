@@ -90,6 +90,16 @@ POST https://ship-ape-sse-production.up.railway.app/mcp/public
 # Authenticated endpoint
 POST https://ship-ape-sse-production.up.railway.app/mcp
 Headers: Authorization: Bearer <your-token>
+
+# SSE stream with auth header (preferred if client supports headers)
+GET  https://ship-ape-sse-production.up.railway.app/mcp/sse/{sessionId}
+Headers: Authorization: Bearer <your-token>
+
+# SSE stream via query param (EventSource-compatible)
+GET  https://ship-ape-sse-production.up.railway.app/mcp/sse?sessionId={id}&access_token={your-token}
+
+# Inspector-friendly alias
+GET  https://ship-ape-sse-production.up.railway.app/sse?sessionId={id}&access_token={your-token}
 ```
 
 ## Available MCP Tools
@@ -111,7 +121,7 @@ All endpoints have been tested and verified working:
 curl -X POST https://ship-ape-sse-production.up.railway.app/mcp/public \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}}'
-# ✅ Returns: {"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2025-06-18"...}}
+# ✅ Returns: {"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2024-11-05"...}}
 
 # Tools list test  
 curl -X POST https://ship-ape-sse-production.up.railway.app/mcp/public \
@@ -124,7 +134,7 @@ curl -X POST https://ship-ape-sse-production.up.railway.app/mcp \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <api-key>" \
   -d '{"jsonrpc": "2.0", "id": 3, "method": "initialize", "params": {}}'
-# ✅ Returns: {"jsonrpc":"2.0","id":3,"result":{"protocolVersion":"2025-06-18"...}}
+# ✅ Returns: {"jsonrpc":"2.0","id":3,"result":{"protocolVersion":"2024-11-05"...}}
 ```
 
 ## Testing Commands
