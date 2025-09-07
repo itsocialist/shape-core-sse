@@ -124,6 +124,12 @@ export class HttpServerTransport {
     this.app.use(express.json({ limit: '10mb' }));
     this.app.use(express.urlencoded({ extended: true }));
 
+    // Explicitly handle CORS preflight for all routes (helps strict clients)
+    this.app.options('*', (req: Request, res: Response) => {
+      // CORS middleware already set headers; just return 204 quickly
+      res.sendStatus(204);
+    });
+
     // Request logging
     this.app.use((req, res, next) => {
       console.log(`[SSE] ${req.method} ${req.path} - ${new Date().toISOString()}`);
