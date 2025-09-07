@@ -279,10 +279,21 @@ export class HttpServerTransport {
           return res.status(400).send('invalid_redirect_uri');
         }
       } else {
-        // Fallback allow for Claude Web legacy
+        // Fallback allowances for well-known clients that may not perform DCR
+        // 1) Claude Web legacy callback
         const isClaude = redirect_uri === 'https://claude.ai/api/mcp/auth_callback' || redirect_uri === 'https://claude.com/api/mcp/auth_callback';
-        if (!isClaude) {
-          // If not registered and not Claude, reject to prevent open redirects
+        // 2) Inspector/Local clients using loopback redirect URIs (localhost/127.0.0.1/[::1])
+        let isLoopback = false;
+        try {
+          const ru = new URL(redirect_uri || '');
+          isLoopback = (
+            (ru.hostname === 'localhost' || ru.hostname === '127.0.0.1' || ru.hostname === '::1') &&
+            (ru.protocol === 'http:' || ru.protocol === 'https:')
+          );
+        } catch {}
+
+        if (!isClaude && !isLoopback) {
+          // If not registered and not on an allowed redirect, reject to prevent open redirects
           return res.status(400).send('invalid_client');
         }
       }
@@ -368,6 +379,19 @@ export class HttpServerTransport {
           // Clean up used auth code
           tempAuthCodes.delete(code);
 
+          // Ensure an OAuth-backed tenant exists so downstream tenant lookup succeeds
+          let oauthTenantId = `oauth-${(client_id || 'claude-web').toString().slice(0, 48)}`;
+          try {
+            const info = this.authenticator.getTenantInfo(oauthTenantId);
+            if (!info) {
+              // Create a persistent tenant for this OAuth client
+              await this.authenticator.createTenant({ tenantId: oauthTenantId, permissions: ['read', 'write'] });
+            }
+          } catch (e) {
+            // Fallback to demo tenant if creation fails
+            oauthTenantId = 'demo-public-tenant';
+          }
+
           // Generate access token for Claude Web
           const accessToken = `mcp_${Math.random().toString(36).substr(2, 48)}`;
           
@@ -376,7 +400,7 @@ export class HttpServerTransport {
           (this as any).accessTokens.set(accessToken, {
             client_id: authData.client_id,
             scope: authData.scope,
-            tenant_id: 'claude-web-tenant', // Default tenant for Claude Web
+            tenant_id: oauthTenantId,
             expires: Date.now() + 3600000 // 1 hour
           });
 
