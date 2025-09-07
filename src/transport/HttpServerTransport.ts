@@ -430,27 +430,6 @@ export class HttpServerTransport {
       }
     });
 
-    // GET /mcp endpoint for server info (required by Claude Web after initialization)
-    this.app.get('/mcp', (req: Request, res: Response) => {
-      res.json({
-        name: 'Ship APE Core SSE',
-        version: '0.4.0',
-        description: 'Multi-tenant MCP server for Ship APE platform integration',
-        protocol_version: '2025-06-18',
-        transport: 'http',
-        capabilities: {
-          tools: { listChanged: true },
-          resources: { subscribe: true, listChanged: true },
-          prompts: { listChanged: true },
-          logging: {}
-        },
-        authentication: {
-          type: 'oauth2',
-          authorization_endpoint: `https://${req.get('host')}/oauth/authorize`,
-          token_endpoint: `https://${req.get('host')}/oauth/token`
-        }
-      });
-    });
 
     // MCP tool execution endpoint (authenticated)
     this.app.post('/mcp', async (req: Request, res: Response) => {
@@ -561,6 +540,58 @@ export class HttpServerTransport {
             data: { 
               reason: error instanceof Error ? error.message : 'Unknown error' 
             }
+          }
+        });
+      }
+    });
+
+    // Simple SSE endpoint for MCP inspector (no auth required for testing)
+    this.app.get('/mcp', async (req: Request, res: Response) => {
+      // Check if this is an SSE request based on Accept header
+      const acceptHeader = req.get('Accept');
+      if (acceptHeader && acceptHeader.includes('text/event-stream')) {
+        // Handle SSE request
+        res.writeHead(200, {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Cache-Control'
+        });
+        
+        // Send initial connection message
+        res.write('event: connected\n');
+        res.write('data: {"type":"connected","message":"SSE connection established"}\n\n');
+        
+        // Keep connection alive
+        const keepAlive = setInterval(() => {
+          res.write('event: ping\n');
+          res.write('data: {"type":"ping"}\n\n');
+        }, 30000);
+        
+        req.on('close', () => {
+          clearInterval(keepAlive);
+        });
+        
+        return;
+      } else {
+        // Handle regular GET request - return server info
+        res.json({
+          name: 'Ship APE Core SSE',
+          version: '0.4.0',
+          description: 'Multi-tenant MCP server for Ship APE platform integration',
+          protocol_version: '2025-06-18',
+          transport: 'http',
+          capabilities: {
+            tools: { listChanged: true },
+            resources: { subscribe: true, listChanged: true },
+            prompts: { listChanged: true },
+            logging: {}
+          },
+          authentication: {
+            type: 'oauth2',
+            authorization_endpoint: `https://${req.get('host')}/oauth/authorize`,
+            token_endpoint: `https://${req.get('host')}/oauth/token`
           }
         });
       }
