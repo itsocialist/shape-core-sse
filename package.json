@@ -36,6 +36,7 @@
     "lint": "eslint src/**/*.ts",
     "type-check": "tsc --noEmit",
     "smoke:remote": "node scripts/test-remote.mjs",
+    "serve:util": "node scripts/serve-util.mjs",
     "prepare": "npm run build || echo 'Build skipped in production'"
   },
   "keywords": [

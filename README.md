@@ -57,6 +57,21 @@ docker run -d \
   ship-ape/core-sse:latest
 ```
 
+### Admin Utility (Tenants + Tests)
+
+Serve a small local page to manage tenants and exercise endpoints:
+
+```bash
+npm run serve:util
+# open http://localhost:5173
+```
+
+This page (admin-utility.html) lets you:
+- Create/list/rotate/delete tenants using your `X-Master-Key`
+- Call MCP `initialize` and `tools/list` with a tenant `apiKey`
+- Open an SSE stream using `GET /mcp/sse?sessionId=...&access_token=...`
+- Toggle Base URL between your Railway deploy and local dev
+
 ## Architecture Overview
 
 ### Multi-Tenant Security Model

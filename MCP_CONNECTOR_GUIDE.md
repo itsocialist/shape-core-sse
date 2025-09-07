@@ -102,6 +102,16 @@ GET  https://ship-ape-sse-production.up.railway.app/mcp/sse?sessionId={id}&acces
 GET  https://ship-ape-sse-production.up.railway.app/sse?sessionId={id}&access_token={your-token}
 ```
 
+## Admin Utility (Tenants + Tests)
+
+- File path: `admin-utility.html`
+- Serve locally: `npm run serve:util` then open `http://localhost:5173`
+- Capabilities:
+  - Create/List/Rotate/Delete tenants (requires `X-Master-Key`)
+  - Test MCP `initialize` and `tools/list` with an issued `apiKey`
+  - SSE connect using `GET /mcp/sse?sessionId=...&access_token=...`
+  - Toggle Base URL between Railway and Local
+
 ## Available MCP Tools
 
 The server provides the following tools for testing:
