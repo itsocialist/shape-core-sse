@@ -636,7 +636,9 @@ export class MCPMProServer {
         result: {
           protocolVersion: '2024-11-05',
           capabilities: {
-            tools: {},
+            tools: { listChanged: true },
+            resources: { subscribe: true, listChanged: true },
+            prompts: { listChanged: true },
             logging: {}
           },
           serverInfo: {
