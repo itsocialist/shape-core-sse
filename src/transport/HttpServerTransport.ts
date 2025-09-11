@@ -390,19 +390,21 @@ export class HttpServerTransport {
     this.app.post('/oauth/authorize', (req: Request, res: Response) => {
       const { action, auth_id } = req.body;
       
+      console.log('[OAuth] Consent form submission:', { action, auth_id, bodyKeys: Object.keys(req.body) });
+      
       // Retrieve pending authorization
       const pendingAuths: Map<string, any> = (this as any).pendingAuthorizations || new Map();
+      console.log('[OAuth] Pending authorizations:', Array.from(pendingAuths.keys()));
       const authRequest = pendingAuths.get(auth_id);
       
       if (!authRequest) {
+        console.log('[OAuth] Authorization not found for auth_id:', auth_id);
         return res.status(400).send('Invalid or expired authorization request');
       }
       
-      // Clean up pending authorization
-      pendingAuths.delete(auth_id);
-      
-      // Check if expired
+      // Check if expired (before deleting)
       if (authRequest.expires < Date.now()) {
+        pendingAuths.delete(auth_id); // Clean up expired auth
         return res.redirect(`${authRequest.redirect_uri}?error=expired&state=${encodeURIComponent(authRequest.state || '')}`);
       }
       
@@ -421,9 +423,17 @@ export class HttpServerTransport {
           expires: Date.now() + 10 * 60 * 1000 // 10 minutes
         });
         
-        // Redirect back with code
-        res.redirect(`${authRequest.redirect_uri}?code=${encodeURIComponent(authCode)}&state=${encodeURIComponent(authRequest.state || '')}`);
+        console.log('[OAuth] Authorization approved, redirecting with code:', authCode);
+        
+        // Clean up pending authorization after successful processing
+        pendingAuths.delete(auth_id);
+        
+        // Always redirect to the callback URL with the authorization code
+        res.redirect(`${authRequest.redirect_uri}?code=${encodeURIComponent(authCode)}&state=${encodeURIComponent(authRequest.state || '')}`)
       } else {
+        // Clean up pending authorization
+        pendingAuths.delete(auth_id);
+        
         // User denied authorization
         res.redirect(`${authRequest.redirect_uri}?error=access_denied&state=${encodeURIComponent(authRequest.state || '')}`);
       }
