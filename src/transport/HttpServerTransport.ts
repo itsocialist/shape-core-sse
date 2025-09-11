@@ -297,8 +297,11 @@ export class HttpServerTransport {
         }
       } else {
         // Fallback allowances for well-known clients that may not perform DCR
-        // 1) Claude Web legacy callback
-        const isClaude = redirect_uri === 'https://claude.ai/api/mcp/auth_callback' || redirect_uri === 'https://claude.com/api/mcp/auth_callback';
+        // 1) Claude Web/Desktop callbacks - multiple valid patterns
+        const isClaudeRedirect = redirect_uri === 'https://claude.ai/api/mcp/auth_callback' || 
+                                redirect_uri === 'https://claude.com/api/mcp/auth_callback' ||
+                                redirect_uri === 'https://claude.ai/oauth/callback' ||
+                                redirect_uri === 'https://claude.com/oauth/callback';
         // 2) Inspector/Local clients using loopback redirect URIs (localhost/127.0.0.1/[::1])
         let isLoopback = false;
         try {
@@ -309,7 +312,7 @@ export class HttpServerTransport {
           );
         } catch {}
 
-        if (!isClaude && !isLoopback) {
+        if (!isClaudeRedirect && !isLoopback) {
           // If not registered and not on an allowed redirect, reject to prevent open redirects
           return res.status(400).send('invalid_client');
         }
