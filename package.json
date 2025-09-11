@@ -13,6 +13,8 @@
     "dev": "tsx src/index.ts",
     "dev:basic": "SHAPE_BASIC_MODE=true tsx src/index.ts",
     "dev:sse": "SHAPE_SSE_MODE=true tsx src/index.ts",
+    "dev:sse:https": "USE_HTTPS=true SHAPE_SSE_MODE=true tsx src/index.ts",
+    "generate-certs": "mkdir -p certs && openssl req -x509 -newkey rsa:4096 -keyout certs/key.pem -out certs/cert.pem -days 365 -nodes -subj '/C=US/ST=State/L=City/O=Organization/CN=localhost'",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "test:unit": "NODE_OPTIONS='--experimental-vm-modules' jest --testPathPattern=unit",
     "test:integration": "npm run build && NODE_OPTIONS='--experimental-vm-modules' jest --testPathPattern=integration",

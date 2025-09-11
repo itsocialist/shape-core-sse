@@ -104,7 +104,7 @@ export class SchemaValidator {
       for (const table of tables) {
         const foreignKeys = this.db.pragma(`foreign_key_list(${table.name})`);
         
-        for (const fk of foreignKeys) {
+        for (const fk of foreignKeys as any[]) {
           // Check for violations
           const violatingRows = this.db.prepare(`
             SELECT COUNT(*) as count 
@@ -175,7 +175,7 @@ export class SchemaValidator {
         const columns = this.db.pragma(`table_info(${table.name})`);
         
         // Check for tables without primary keys
-        const hasPrimaryKey = columns.some((col: any) => col.pk > 0);
+        const hasPrimaryKey = (columns as any[]).some((col: any) => col.pk > 0);
         if (!hasPrimaryKey) {
           errors.push(`Table ${table.name} has no primary key`);
         }
@@ -202,8 +202,8 @@ export class SchemaValidator {
     try {
       // Run integrity check
       const integrityResult = this.db.pragma('integrity_check');
-      if (integrityResult[0] !== 'ok') {
-        errors.push(`Database integrity check failed: ${integrityResult.join(', ')}`);
+      if ((integrityResult as any[])[0] !== 'ok') {
+        errors.push(`Database integrity check failed: ${(integrityResult as any[]).join(', ')}`);
       }
 
       // For testing, we'll be more lenient on constraint validation
@@ -238,7 +238,7 @@ export class SchemaValidator {
         schema.tables[table.name] = {
           columns: {},
           indexes: indexes.map(i => i.name),
-          foreignKeys: foreignKeys.map((fk: any) => ({
+          foreignKeys: (foreignKeys as any[]).map((fk: any) => ({
             column: fk.from,
             referencedTable: fk.table,
             referencedColumn: fk.to
@@ -246,7 +246,7 @@ export class SchemaValidator {
         };
 
         // Map columns
-        for (const column of columns) {
+        for (const column of columns as any[]) {
           let columnDef = column.type;
           if (column.notnull) columnDef += ' NOT NULL';
           if (column.pk) columnDef += ' PRIMARY KEY';

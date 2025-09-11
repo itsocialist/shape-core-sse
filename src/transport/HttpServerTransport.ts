@@ -7,7 +7,10 @@ import express from 'express';
 import { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import { Server as HttpServer } from 'http';
+import { Server as HttpServer, createServer as createHttpServer } from 'http';
+import { Server as HttpsServer, createServer as createHttpsServer } from 'https';
+import * as fs from 'fs';
+import * as path from 'path';
 import { SSEConnection } from './SSEConnection.js';
 import { TenantAuthenticator } from '../security/TenantAuthenticator.js';
 
@@ -57,7 +60,7 @@ export interface AuthenticationHandler {
 
 export class HttpServerTransport {
   private app: express.Application;
-  private server?: HttpServer;
+  private server?: HttpServer | HttpsServer;
   private sseConnections = new Map<string, SSEConnection>();
   private authenticator: TenantAuthenticator;
   private requestHandler?: MCPRequestHandler;
@@ -1166,18 +1169,53 @@ export class HttpServerTransport {
     this.authenticationHandler = handler;
   }
 
+  private startHttpServer(resolve: () => void): void {
+    this.server = this.app.listen(this.config.port, '0.0.0.0', () => {
+      console.log(`[SSE] HTTP/SSE server listening on 0.0.0.0:${this.config.port}`);
+      console.log(`[SSE] Health check: http://localhost:${this.config.port}/health`);
+      console.log(`[SSE] MCP endpoint: http://localhost:${this.config.port}/mcp`);
+      resolve();
+    });
+  }
+
   public async start(): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        // Bind to 0.0.0.0 for Railway compatibility
-        this.server = this.app.listen(this.config.port, '0.0.0.0', () => {
-          console.log(`[SSE] HTTP/SSE server listening on 0.0.0.0:${this.config.port}`);
-          console.log(`[SSE] Health check: http://localhost:${this.config.port}/health`);
-          console.log(`[SSE] MCP endpoint: http://localhost:${this.config.port}/mcp`);
-          resolve();
-        });
+        // Check if we should use HTTPS for local development
+        const useHttps = process.env.USE_HTTPS === 'true' || process.env.NODE_ENV === 'production';
+        const isProduction = process.env.NODE_ENV === 'production';
+        
+        if (useHttps && !isProduction) {
+          // Use HTTPS for local development with self-signed certificates
+          const certsPath = path.join(process.cwd(), 'certs');
+          const keyPath = path.join(certsPath, 'key.pem');
+          const certPath = path.join(certsPath, 'cert.pem');
+          
+          if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+            const httpsOptions = {
+              key: fs.readFileSync(keyPath),
+              cert: fs.readFileSync(certPath)
+            };
+            
+            this.server = createHttpsServer(httpsOptions, this.app);
+            this.server.listen(this.config.port, '0.0.0.0', () => {
+              console.log(`[SSE] HTTPS/SSE server listening on 0.0.0.0:${this.config.port}`);
+              console.log(`[SSE] Health check: https://localhost:${this.config.port}/health`);
+              console.log(`[SSE] MCP endpoint: https://localhost:${this.config.port}/mcp`);
+              console.log(`[SSE] ⚠️  Using self-signed certificate for local development`);
+              resolve();
+            });
+          } else {
+            console.warn(`[SSE] HTTPS requested but certificates not found at ${certsPath}`);
+            console.log(`[SSE] Falling back to HTTP. To use HTTPS, run: npm run generate-certs`);
+            this.startHttpServer(resolve);
+          }
+        } else {
+          // Use HTTP (for production Railway handles HTTPS termination)
+          this.startHttpServer(resolve);
+        }
 
-        this.server.on('error', (error) => {
+        this.server?.on('error', (error) => {
           console.error('[SSE] Server error:', error);
           reject(error);
         });

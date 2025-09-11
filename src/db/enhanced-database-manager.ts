@@ -23,9 +23,14 @@ import {
 
 /**
  * Enhanced Database Manager with project management capabilities
- * Extends base DatabaseManager with comprehensive project management features
+ * Uses composition instead of inheritance to work with private DatabaseManager
  */
-export class EnhancedDatabaseManager extends DatabaseManager {
+export class EnhancedDatabaseManager {
+  private baseManager: DatabaseManager;
+
+  private constructor(baseManager: DatabaseManager) {
+    this.baseManager = baseManager;
+  }
 
   /**
    * Get singleton instance of EnhancedDatabaseManager
@@ -33,9 +38,53 @@ export class EnhancedDatabaseManager extends DatabaseManager {
    */
   static async getInstance(dbPath?: string): Promise<EnhancedDatabaseManager> {
     const baseManager = await DatabaseManager.create(dbPath);
-    // Create EnhancedDatabaseManager using the same database connection
-    const enhanced = Object.setPrototypeOf(baseManager, EnhancedDatabaseManager.prototype);
-    return enhanced as EnhancedDatabaseManager;
+    return new EnhancedDatabaseManager(baseManager);
+  }
+
+  // Delegate all base methods to the underlying manager
+  async storeContext(...args: Parameters<DatabaseManager['storeContext']>) {
+    return this.baseManager.storeContext(...args);
+  }
+
+  async getProjectContext(...args: Parameters<DatabaseManager['getProjectContext']>) {
+    return this.baseManager.getProjectContext(...args);
+  }
+
+  async searchContext(...args: Parameters<DatabaseManager['searchContext']>) {
+    return this.baseManager.searchContext(...args);
+  }
+
+  getProject(...args: Parameters<DatabaseManager['getProject']>) {
+    return this.baseManager.getProject(...args);
+  }
+
+  listProjects(...args: Parameters<DatabaseManager['listProjects']>) {
+    return this.baseManager.listProjects(...args);
+  }
+
+  updateProjectStatus(...args: Parameters<DatabaseManager['updateProjectStatus']>) {
+    return this.baseManager.updateProjectStatus(...args);
+  }
+
+  upsertProject(...args: Parameters<DatabaseManager['upsertProject']>) {
+    return this.baseManager.upsertProject(...args);
+  }
+
+  async getRecentUpdates(...args: Parameters<DatabaseManager['getRecentUpdates']>) {
+    return this.baseManager.getRecentUpdates(...args);
+  }
+
+  async close() {
+    return this.baseManager.close();
+  }
+
+  getCurrentSystem() {
+    return this.baseManager.getCurrentSystem();
+  }
+
+  // Access to the underlying database for enhanced operations
+  private get db() {
+    return (this.baseManager as any).db;
   }
 
   // Enhanced Project Management
@@ -59,8 +108,12 @@ export class EnhancedDatabaseManager extends DatabaseManager {
     }
 
     // Get or create current system
-    const currentSystem = await this.getCurrentSystem();
-    const systemId = projectData.system_id || currentSystem.id;
+    const currentSystem = this.getCurrentSystem();
+    const systemId = projectData.system_id || currentSystem?.id;
+
+    if (!systemId) {
+      throw new ValidationError('System ID is required');
+    }
 
     const insertProject = this.db.prepare(`
       INSERT INTO projects (
@@ -90,7 +143,7 @@ export class EnhancedDatabaseManager extends DatabaseManager {
     `).get(projectName) as any;
 
     if (!project) {
-      throw new NotFoundError(`Project '${projectName}' not found`);
+      throw new NotFoundError('Project', projectName);
     }
 
     return {
@@ -115,7 +168,7 @@ export class EnhancedDatabaseManager extends DatabaseManager {
       epicData.project_id,
       epicData.title,
       epicData.description,
-      epicData.status || 'planning',
+      'planning', // Default status
       epicData.priority || 'medium',
       epicData.business_value,
       JSON.stringify(epicData.acceptance_criteria),
@@ -135,7 +188,7 @@ export class EnhancedDatabaseManager extends DatabaseManager {
     `).get(epicId) as any;
 
     if (!epic) {
-      throw new NotFoundError(`Epic with ID ${epicId} not found`);
+      throw new NotFoundError('Epic', epicId.toString());
     }
 
     return {
@@ -162,7 +215,7 @@ export class EnhancedDatabaseManager extends DatabaseManager {
     `).get(epicId) as any;
 
     if (!progress) {
-      throw new NotFoundError(`Epic with ID ${epicId} not found`);
+      throw new NotFoundError('Epic', epicId.toString());
     }
 
     const progressPercentage = progress.total_points > 0 
@@ -217,7 +270,7 @@ export class EnhancedDatabaseManager extends DatabaseManager {
       sprintData.end_date,
       sprintData.capacity_story_points,
       sprintData.sprint_goal,
-      sprintData.status || 'planning'
+      'planning' // Default status
     );
 
     return { success: true, sprint_id: result.lastInsertRowid as number };
@@ -231,7 +284,7 @@ export class EnhancedDatabaseManager extends DatabaseManager {
     `).get(sprintId) as any;
 
     if (!sprint) {
-      throw new NotFoundError(`Sprint with ID ${sprintId} not found`);
+      throw new NotFoundError('Sprint', sprintId.toString());
     }
 
     return {
@@ -255,7 +308,7 @@ export class EnhancedDatabaseManager extends DatabaseManager {
     `).get(sprintId) as any;
 
     if (!velocity) {
-      throw new NotFoundError(`Sprint with ID ${sprintId} not found`);
+      throw new NotFoundError('Sprint', sprintId.toString());
     }
 
     const velocityPercentage = velocity.planned_points > 0 
@@ -303,7 +356,7 @@ export class EnhancedDatabaseManager extends DatabaseManager {
     `).get(storyId) as any;
 
     if (!story) {
-      throw new NotFoundError(`Story with ID ${storyId} not found`);
+      throw new NotFoundError('Story', storyId.toString());
     }
 
     return {
@@ -381,7 +434,7 @@ export class EnhancedDatabaseManager extends DatabaseManager {
     `).get(issueId) as any;
 
     if (!issue) {
-      throw new NotFoundError(`Issue with ID ${issueId} not found`);
+      throw new NotFoundError('Issue', issueId.toString());
     }
 
     return {

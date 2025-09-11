@@ -291,6 +291,14 @@ export class MCPMProServer {
           },
           required: ['idea', 'projectName']
         }
+      },
+      {
+        name: 'get_service_status',
+        description: 'Get the status of all registered services',
+        inputSchema: {
+          type: 'object',
+          properties: {}
+        }
       }
     ];
 
@@ -430,6 +438,10 @@ export class MCPMProServer {
         if (!this.isProMode) throw new Error('This tool requires MPCM-Pro mode');
         result = await this.buildAppFromIdea(args);
         break;
+      case 'get_service_status':
+        if (!this.isProMode) throw new Error('This tool requires MPCM-Pro mode');
+        result = await this.getServiceStatus();
+        break;
         
       default:
         throw new Error(`Unknown tool: ${name}`);
@@ -441,6 +453,22 @@ export class MCPMProServer {
     }
 
     return result as string;
+  }
+
+  private async getServiceStatus(): Promise<string> {
+    if (!this.registry) {
+      throw new Error('Service registry not available in basic mode');
+    }
+    const services = this.registry.getServices();
+    const serviceInfo = services.map(service => ({
+      name: service.name,
+      status: service.status,
+      lastError: service.lastError
+    }));
+    return JSON.stringify({
+      totalServices: services.length,
+      services: serviceInfo
+    }, null, 2);
   }
 
   /**

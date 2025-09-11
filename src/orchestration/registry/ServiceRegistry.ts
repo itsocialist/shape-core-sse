@@ -72,7 +72,7 @@ export class ServiceRegistry extends EventEmitter {
         registeredAt: new Date()
       });
       
-      throw new Error(`Failed to register service ${name}: ${errorMsg}`);
+      console.error(`Failed to register service ${name}: ${errorMsg}`);
     }
   }
 
@@ -168,12 +168,8 @@ export class ServiceRegistry extends EventEmitter {
   async shutdown(): Promise<void> {
     for (const [name, service] of this.services) {
       try {
-        // Try shutdown first, then cleanup for compatibility
-        if (typeof service.adapter.shutdown === 'function') {
-          await service.adapter.shutdown();
-        } else if (typeof service.adapter.cleanup === 'function') {
-          await service.adapter.cleanup();
-        }
+        // Shutdown the service adapter
+        await service.adapter.shutdown();
         console.error(`✅ Shut down service: ${name}`);
       } catch (error) {
         console.error(`❌ Error shutting down service ${name}:`, error);

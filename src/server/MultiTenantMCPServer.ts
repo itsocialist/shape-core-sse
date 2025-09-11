@@ -90,9 +90,13 @@ export class MultiTenantMCPServer {
         params: request.params
       });
 
-      // Handle notifications (which return null) - don't send response
+      // Handle notifications (which return null) - send empty response
       if (response === null) {
-        return null;
+        return {
+          jsonrpc: '2.0',
+          id: request.id,
+          result: null
+        };
       }
 
       return response;

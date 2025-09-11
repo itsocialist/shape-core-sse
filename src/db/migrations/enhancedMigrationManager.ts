@@ -35,15 +35,35 @@ export interface EnhancedMigrationStatus {
   };
 }
 
-export class EnhancedMigrationManager extends MigrationManager {
+export class EnhancedMigrationManager {
+  private baseMigrationManager: MigrationManager;
+  private db: Database.Database;
   private schemaValidator: SchemaValidator;
   private backupManager: BackupManager;
 
   constructor(db: Database.Database, migrationsPath?: string, dbPath?: string) {
-    super(db, migrationsPath);
+    this.baseMigrationManager = new MigrationManager(db, migrationsPath);
+    this.db = db;
     this.schemaValidator = new SchemaValidator(db);
     this.backupManager = new BackupManager(dbPath || ':memory:');
     this.enhanceMigrationTable();
+  }
+
+  // Delegate base methods
+  getCurrentVersion(): number {
+    return this.baseMigrationManager.getCurrentVersion();
+  }
+
+  async loadMigrations() {
+    return this.baseMigrationManager.loadMigrations();
+  }
+
+  async getStatus() {
+    return this.baseMigrationManager.getStatus();
+  }
+
+  async rollback(targetVersion: number) {
+    return this.baseMigrationManager.rollback(targetVersion);
   }
 
   /**

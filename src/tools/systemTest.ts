@@ -71,12 +71,25 @@ export async function handleSystemTest(
   }
 }
 
-async function testSystemHealth(db: DatabaseManager, registry: ServiceRegistry) {
-  const test = { name: 'System Health', status: 'running', checks: [] };
+interface TestCheck {
+  name: string;
+  status: 'pass' | 'fail' | 'warn';
+  message: string;
+}
+
+interface TestResult {
+  name: string;
+  status: 'running' | 'pass' | 'fail' | 'error';
+  checks: TestCheck[];
+  error?: string;
+}
+
+async function testSystemHealth(db: DatabaseManager, registry: ServiceRegistry): Promise<TestResult> {
+  const test: TestResult = { name: 'System Health', status: 'running', checks: [] };
   
   try {
     // Database connectivity
-    const dbStatus = await db.query('SELECT 1 as test');
+    const dbStatus = db.getCurrentSystem();
     test.checks.push({
       name: 'Database Connection',
       status: dbStatus ? 'pass' : 'fail',
@@ -84,7 +97,7 @@ async function testSystemHealth(db: DatabaseManager, registry: ServiceRegistry) 
     });
     
     // Service registry
-    const services = await registry.listServices();
+    const services = registry.getServices();
     test.checks.push({
       name: 'Service Registry',
       status: services.length >= 2 ? 'pass' : 'fail',
@@ -92,11 +105,11 @@ async function testSystemHealth(db: DatabaseManager, registry: ServiceRegistry) 
     });
     
     // Schema version
-    const schema = await db.query('PRAGMA user_version');
+    const schemaVersion = db.getSchemaVersion();
     test.checks.push({
       name: 'Database Schema',
-      status: schema && schema[0]?.user_version >= 4 ? 'pass' : 'fail',
-      message: `Schema version: ${schema?.[0]?.user_version || 'unknown'}`
+      status: schemaVersion >= 4 ? 'pass' : 'fail',
+      message: `Schema version: ${schemaVersion}`
     });
     
     test.status = test.checks.every(c => c.status === 'pass') ? 'pass' : 'fail';
@@ -109,19 +122,27 @@ async function testSystemHealth(db: DatabaseManager, registry: ServiceRegistry) 
   return test;
 }
 
-async function testMCPProtocol(db: DatabaseManager, registry: ServiceRegistry) {
-  const test = { name: 'MCP Protocol', status: 'running', checks: [] };
+async function testMCPProtocol(db: DatabaseManager, registry: ServiceRegistry): Promise<TestResult> {
+  const test: TestResult = { name: 'MCP Protocol', status: 'running', checks: [] };
   
   try {
     // Test basic context operations
     const testProject = `test-${Date.now()}`;
     
     // Store context
-    await db.storeContext(testProject, 'note', 'test-key', 'test value', ['test'], false);
+    const project = db.upsertProject({ name: testProject });
+    db.storeContext({
+      project_id: project.id,
+      type: 'note',
+      key: 'test-key',
+      value: 'test value',
+      tags: ['test'],
+      is_system_specific: false
+    });
     test.checks.push({ name: 'Store Context', status: 'pass', message: 'Context stored successfully' });
     
     // Retrieve context
-    const contexts = await db.getProjectContext(testProject);
+    const contexts = db.getProjectContext(project.id);
     test.checks.push({
       name: 'Retrieve Context',
       status: contexts.length > 0 ? 'pass' : 'fail',
@@ -129,7 +150,7 @@ async function testMCPProtocol(db: DatabaseManager, registry: ServiceRegistry) {
     });
     
     // Search context
-    const searchResults = await db.searchContext({ projectName: testProject, query: 'test' });
+    const searchResults = db.searchContext({ query: 'test' });
     test.checks.push({
       name: 'Search Context',
       status: searchResults.length > 0 ? 'pass' : 'fail',
@@ -146,8 +167,8 @@ async function testMCPProtocol(db: DatabaseManager, registry: ServiceRegistry) {
   return test;
 }
 
-async function testRoleSystem(orchestrator: RoleOrchestrator) {
-  const test = { name: 'Role System', status: 'running', checks: [] };
+async function testRoleSystem(orchestrator: RoleOrchestrator): Promise<TestResult> {
+  const test: TestResult = { name: 'Role System', status: 'running', checks: [] };
   
   try {
     const testProject = `role-test-${Date.now()}`;
@@ -164,7 +185,7 @@ async function testRoleSystem(orchestrator: RoleOrchestrator) {
     test.checks.push({
       name: 'Role Execution',
       status: result.success ? 'pass' : 'fail',
-      message: result.success ? 'Role executed successfully' : result.error
+      message: result.success ? 'Role executed successfully' : (result.error || 'Unknown error')
     });
     
     test.checks.push({
@@ -183,8 +204,8 @@ async function testRoleSystem(orchestrator: RoleOrchestrator) {
   return test;
 }
 
-async function testServiceIntegration(registry: ServiceRegistry) {
-  const test = { name: 'Service Integration', status: 'running', checks: [] };
+async function testServiceIntegration(registry: ServiceRegistry): Promise<TestResult> {
+  const test: TestResult = { name: 'Service Integration', status: 'running', checks: [] };
   
   try {
     // Test filesystem service
@@ -196,13 +217,13 @@ async function testServiceIntegration(registry: ServiceRegistry) {
     test.checks.push({
       name: 'Filesystem Service',
       status: fsResult.success ? 'pass' : 'fail',
-      message: fsResult.success ? 'File operations working' : fsResult.error
+      message: fsResult.success ? 'File operations working' : (fsResult.error || 'Unknown error')
     });
     
     // Test git service (basic capability check)
     try {
       const gitService = await registry.getService('git');
-      const capabilities = await gitService?.getCapabilities();
+      const capabilities = gitService?.capabilities;
       test.checks.push({
         name: 'Git Service',
         status: capabilities && capabilities.length > 0 ? 'pass' : 'fail',
@@ -226,13 +247,21 @@ async function testServiceIntegration(registry: ServiceRegistry) {
   return test;
 }
 
-async function testPerformance(db: DatabaseManager, registry: ServiceRegistry) {
-  const test = { name: 'Performance', status: 'running', checks: [] };
+async function testPerformance(db: DatabaseManager, registry: ServiceRegistry): Promise<TestResult> {
+  const test: TestResult = { name: 'Performance', status: 'running', checks: [] };
   
   try {
     // Context storage performance
     const start = Date.now();
-    await db.storeContext(`perf-test-${Date.now()}`, 'note', 'perf-key', 'performance test', ['perf'], false);
+    const perfProject = db.upsertProject({ name: `perf-test-${Date.now()}` });
+    db.storeContext({
+      project_id: perfProject.id,
+      type: 'note',
+      key: 'perf-key',
+      value: 'performance test',
+      tags: ['perf'],
+      is_system_specific: false
+    });
     const contextTime = Date.now() - start;
     
     test.checks.push({
