@@ -61,6 +61,7 @@ export interface AuthenticationHandler {
 export class HttpServerTransport {
   private app: express.Application;
   private server?: HttpServer | HttpsServer;
+  private httpRedirectServer?: HttpServer;
   private sseConnections = new Map<string, SSEConnection>();
   private authenticator: TenantAuthenticator;
   private requestHandler?: MCPRequestHandler;
@@ -272,7 +273,7 @@ export class HttpServerTransport {
     });
 
     // OAuth authorization endpoint (supports DCR + Inspector PKCE)
-    this.app.get('/oauth/authorize', (req: Request, res: Response) => {
+    this.app.get('/oauth/authorize', async (req: Request, res: Response) => {
       const { client_id, redirect_uri, response_type, state, scope, code_challenge, code_challenge_method } = req.query as Record<string, string>;
 
       // Require authorization code flow
@@ -314,22 +315,115 @@ export class HttpServerTransport {
         }
       }
 
-      // Generate authorization code
-      const authCode = `auth_${Math.random().toString(36).substr(2, 32)}`;
-
-      // Store auth code temporarily (in production, use Redis/database)
-      (this as any).tempAuthCodes = (this as any).tempAuthCodes || new Map();
-      (this as any).tempAuthCodes.set(authCode, {
+      // Store authorization request params temporarily
+      (this as any).pendingAuthorizations = (this as any).pendingAuthorizations || new Map();
+      const authId = `pending_${Math.random().toString(36).substr(2, 32)}`;
+      (this as any).pendingAuthorizations.set(authId, {
         client_id,
         redirect_uri: finalRedirect,
+        state,
         scope: scope || 'mcp',
         code_challenge: code_challenge || undefined,
         code_challenge_method: code_challenge_method || undefined,
         expires: Date.now() + 10 * 60 * 1000 // 10 minutes
       });
 
-      // Redirect back with code
-      res.redirect(`${finalRedirect}?code=${encodeURIComponent(authCode)}&state=${encodeURIComponent(state || '')}`);
+      // Serve the consent page
+      const consentHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authorize Ship APE Core</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .consent-container { background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 450px; width: 100%; padding: 40px; }
+        .app-icon { width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 24px; color: white; }
+        h1 { text-align: center; color: #1a202c; font-size: 24px; margin-bottom: 10px; }
+        .client-name { text-align: center; color: #4a5568; margin-bottom: 30px; font-size: 16px; }
+        .permissions { background: #f7fafc; border-radius: 8px; padding: 20px; margin-bottom: 30px; }
+        .permissions h3 { color: #2d3748; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px; }
+        .permission-item { display: flex; align-items: center; margin-bottom: 12px; color: #4a5568; font-size: 14px; }
+        .permission-item:last-child { margin-bottom: 0; }
+        .permission-icon { width: 20px; height: 20px; background: #48bb78; border-radius: 50%; margin-right: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; }
+        .buttons { display: flex; gap: 12px; }
+        button { flex: 1; padding: 12px 24px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .approve-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .deny-btn { background: #e2e8f0; color: #4a5568; }
+        .info { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; color: #718096; font-size: 12px; }
+        .redirect-uri { background: #edf2f7; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 11px; word-break: break-all; }
+    </style>
+</head>
+<body>
+    <div class="consent-container">
+        <div class="app-icon">🚀</div>
+        <h1>Authorize Access</h1>
+        <div class="client-name"><strong>${client_id || 'Application'}</strong> wants to access Ship APE Core</div>
+        <div class="permissions">
+            <h3>This app will be able to:</h3>
+            <div class="permission-item"><div class="permission-icon">✓</div><span>Execute MCP tools and commands</span></div>
+            <div class="permission-item"><div class="permission-icon">✓</div><span>Access project context and data</span></div>
+            <div class="permission-item"><div class="permission-icon">✓</div><span>Manage resources and prompts</span></div>
+            <div class="permission-item"><div class="permission-icon">✓</div><span>Perform file system operations</span></div>
+        </div>
+        <form method="post">
+            <input type="hidden" name="auth_id" value="${authId}">
+            <div class="buttons">
+                <button type="submit" name="action" value="deny" class="deny-btn">Deny</button>
+                <button type="submit" name="action" value="approve" class="approve-btn">Authorize</button>
+            </div>
+        </form>
+        <div class="info">Redirecting to:<br><span class="redirect-uri">${finalRedirect || ''}</span></div>
+    </div>
+</body>
+</html>`;
+      
+      res.send(consentHtml);
+    });
+
+    // Handle OAuth consent form submission
+    this.app.post('/oauth/authorize', (req: Request, res: Response) => {
+      const { action, auth_id } = req.body;
+      
+      // Retrieve pending authorization
+      const pendingAuths: Map<string, any> = (this as any).pendingAuthorizations || new Map();
+      const authRequest = pendingAuths.get(auth_id);
+      
+      if (!authRequest) {
+        return res.status(400).send('Invalid or expired authorization request');
+      }
+      
+      // Clean up pending authorization
+      pendingAuths.delete(auth_id);
+      
+      // Check if expired
+      if (authRequest.expires < Date.now()) {
+        return res.redirect(`${authRequest.redirect_uri}?error=expired&state=${encodeURIComponent(authRequest.state || '')}`);
+      }
+      
+      if (action === 'approve') {
+        // Generate authorization code
+        const authCode = `auth_${Math.random().toString(36).substr(2, 32)}`;
+        
+        // Store auth code temporarily
+        (this as any).tempAuthCodes = (this as any).tempAuthCodes || new Map();
+        (this as any).tempAuthCodes.set(authCode, {
+          client_id: authRequest.client_id,
+          redirect_uri: authRequest.redirect_uri,
+          scope: authRequest.scope,
+          code_challenge: authRequest.code_challenge,
+          code_challenge_method: authRequest.code_challenge_method,
+          expires: Date.now() + 10 * 60 * 1000 // 10 minutes
+        });
+        
+        // Redirect back with code
+        res.redirect(`${authRequest.redirect_uri}?code=${encodeURIComponent(authCode)}&state=${encodeURIComponent(authRequest.state || '')}`);
+      } else {
+        // User denied authorization
+        res.redirect(`${authRequest.redirect_uri}?error=access_denied&state=${encodeURIComponent(authRequest.state || '')}`);
+      }
     });
 
     // OAuth token endpoint with proper DCR support
@@ -1197,13 +1291,23 @@ export class HttpServerTransport {
               cert: fs.readFileSync(certPath)
             };
             
-            this.server = createHttpsServer(httpsOptions, this.app);
+            // Start HTTP server on main port (e.g., 3010) - for Claude Code compatibility
+            this.server = createHttpServer(this.app);
             this.server.listen(this.config.port, '0.0.0.0', () => {
-              console.log(`[SSE] HTTPS/SSE server listening on 0.0.0.0:${this.config.port}`);
-              console.log(`[SSE] Health check: https://localhost:${this.config.port}/health`);
-              console.log(`[SSE] MCP endpoint: https://localhost:${this.config.port}/mcp`);
-              console.log(`[SSE] ⚠️  Using self-signed certificate for local development`);
-              resolve();
+              console.log(`[SSE] HTTP/SSE server listening on 0.0.0.0:${this.config.port}`);
+              console.log(`[SSE] Health check: http://localhost:${this.config.port}/health`);
+              console.log(`[SSE] MCP endpoint: http://localhost:${this.config.port}/mcp`);
+              
+              // Also start HTTPS server on port+1 (e.g., 3011) for secure connections
+              const httpsPort = this.config.port + 1;
+              this.httpRedirectServer = createHttpsServer(httpsOptions, this.app);
+              this.httpRedirectServer.listen(httpsPort, '0.0.0.0', () => {
+                console.log(`[SSE] HTTPS/SSE server also listening on 0.0.0.0:${httpsPort}`);
+                console.log(`[SSE] Secure health check: https://localhost:${httpsPort}/health`);
+                console.log(`[SSE] Secure MCP endpoint: https://localhost:${httpsPort}/mcp`);
+                console.log(`[SSE] ⚠️  Using self-signed certificate for local development`);
+                resolve();
+              });
             });
           } else {
             console.warn(`[SSE] HTTPS requested but certificates not found at ${certsPath}`);
@@ -1234,12 +1338,37 @@ export class HttpServerTransport {
       }
       this.sseConnections.clear();
 
-      if (this.server) {
-        this.server.close(() => {
-          console.log('[SSE] HTTP/SSE server stopped');
+      // Track how many servers need to close
+      let serversToClose = 0;
+      let serversClosed = 0;
+
+      const checkAllClosed = () => {
+        serversClosed++;
+        if (serversClosed >= serversToClose) {
           resolve();
+        }
+      };
+
+      // Close HTTPS/HTTP main server
+      if (this.server) {
+        serversToClose++;
+        this.server.close(() => {
+          console.log('[SSE] Main server stopped');
+          checkAllClosed();
         });
-      } else {
+      }
+
+      // Close HTTP redirect server if it exists
+      if (this.httpRedirectServer) {
+        serversToClose++;
+        this.httpRedirectServer.close(() => {
+          console.log('[SSE] HTTP redirect server stopped');
+          checkAllClosed();
+        });
+      }
+
+      // If no servers to close, resolve immediately
+      if (serversToClose === 0) {
         resolve();
       }
     });

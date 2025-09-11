@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authorize Ship APE Core</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .consent-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 450px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        .app-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 24px;
+            color: white;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1a202c;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .client-name {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .permissions {
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .permissions h3 {
+            color: #2d3748;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+        }
+        
+        .permission-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            color: #4a5568;
+            font-size: 14px;
+        }
+        
+        .permission-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .permission-icon {
+            width: 20px;
+            height: 20px;
+            background: #48bb78;
+            border-radius: 50%;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .approve-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .deny-btn {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .info {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            color: #718096;
+            font-size: 12px;
+        }
+        
+        .redirect-uri {
+            background: #edf2f7;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 11px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="consent-container">
+        <div class="app-icon">🚀</div>
+        <h1>Authorize Access</h1>
+        <div class="client-name" id="clientInfo">
+            <strong id="clientName">Application</strong> wants to access Ship APE Core
+        </div>
+        
+        <div class="permissions">
+            <h3>This app will be able to:</h3>
+            <div class="permission-item">
+                <div class="permission-icon">✓</div>
+                <span>Execute MCP tools and commands</span>
+            </div>
+            <div class="permission-item">
+                <div class="permission-icon">✓</div>
+                <span>Access project context and data</span>
+            </div>
+            <div class="permission-item">
+                <div class="permission-icon">✓</div>
+                <span>Manage resources and prompts</span>
+            </div>
+            <div class="permission-item">
+                <div class="permission-icon">✓</div>
+                <span>Perform file system operations</span>
+            </div>
+        </div>
+        
+        <form id="consentForm" method="post">
+            <div class="buttons">
+                <button type="submit" name="action" value="deny" class="deny-btn">Deny</button>
+                <button type="submit" name="action" value="approve" class="approve-btn">Authorize</button>
+            </div>
+        </form>
+        
+        <div class="info">
+            Redirecting to:<br>
+            <span class="redirect-uri" id="redirectUri">...</span>
+        </div>
+    </div>
+    
+    <script>
+        // Parse query parameters
+        const params = new URLSearchParams(window.location.search);
+        const clientId = params.get('client_id');
+        const redirectUri = params.get('redirect_uri');
+        const state = params.get('state');
+        
+        // Update UI with client info
+        if (clientId) {
+            // Format client name from client_id if possible
+            const clientName = clientId.startsWith('client_') ? 
+                'Claude' : clientId;
+            document.getElementById('clientName').textContent = clientName;
+        }
+        
+        if (redirectUri) {
+            document.getElementById('redirectUri').textContent = redirectUri;
+        }
+        
+        // Set form action to preserve query params
+        document.getElementById('consentForm').action = window.location.pathname + window.location.search;
+    </script>
+</body>
+</html>
