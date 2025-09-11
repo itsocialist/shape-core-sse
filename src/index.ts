@@ -85,12 +85,15 @@ export class MCPMProServer {
     // Server metadata reflects mode
     this.server = new Server(
       {
-        name: this.isProMode ? 'mpcm-pro' : 'mcp-context-memory',
-        version: '0.3.0',
+        name: '@briandawson/shape-core-sse',
+        version: '0.4.0',
       },
       {
         capabilities: {
-          tools: {},
+          tools: { listChanged: true },
+          resources: { subscribe: true, listChanged: true },
+          prompts: { listChanged: true },
+          logging: {}
         },
       }
     );

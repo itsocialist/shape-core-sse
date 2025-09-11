@@ -77,3 +77,4 @@ performance-results/*.json
 
 # Scripts we want to keep
 !scripts/*.sh
+.cursor/
